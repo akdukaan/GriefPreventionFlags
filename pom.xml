@@ -6,7 +6,7 @@
 
     <groupId>tk.shanebee</groupId>
     <artifactId>GriefPreventionFlags</artifactId>
-    <version>5.10.0.7</version>
+    <version>5.10.0.8-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>

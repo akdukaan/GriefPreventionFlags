@@ -195,5 +195,7 @@ public enum Messages {
     RaidMemberOnlyDeny,
 
     EnabledProtectNamedMobs,
-    DisabledProtectNamedMobs
+    DisabledProtectNamedMobs,
+
+    Prefix
 }

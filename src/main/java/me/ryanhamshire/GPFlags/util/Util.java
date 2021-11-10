@@ -34,7 +34,6 @@ import java.util.regex.Pattern;
 @SuppressWarnings("WeakerAccess")
 public class Util {
 
-    private static final String PREFIX = "&7[&bGP&3Flags&7] &r";
     private static final Pattern HEX_PATTERN = Pattern.compile("<#([A-Fa-f0-9]){6}>");
 
     /**
@@ -244,7 +243,7 @@ public class Util {
 
     public static void sendMessage(@Nullable CommandSender receiver, String message) {
         if (receiver != null) {
-            receiver.sendMessage(getColString(PREFIX + message));
+            receiver.sendMessage(getColString(Messages.Prefix + message));
         } else {
             log(message);
         }
@@ -276,7 +275,7 @@ public class Util {
     }
 
     public static void log(String message) {
-        Bukkit.getConsoleSender().sendMessage(getColString(PREFIX + message));
+        Bukkit.getConsoleSender().sendMessage(getColString(Messages.Prefix + message));
     }
 
     public static void log(String format, Object... objects) {
