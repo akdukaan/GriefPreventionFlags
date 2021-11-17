@@ -8,7 +8,8 @@ Download the latest release from the [Birdflop Discord](https://discord.gg/MBdsx
 
 
 ### What does this fork change from the [Spigot release](https://www.spigotmc.org/resources/gpflags.55773/)?
-- Removed support for GriefPrevention 16.17.1 and below. You can download GriefPrevention 16.17.2-SNAPSHOT from [here](https://ci.appveyor.com/api/buildjobs/g11ovt3huylwdu7e/artifacts/target%2FGriefPrevention.jar). 
+- Removed support for GriefPrevention 16.17.1 and below. You can download GriefPrevention 16.17.2-SNAPSHOT from [here](https://ci.appveyor.com/project/RoboMWM39862/griefprevention/history). *Click on the most recent item without "pull request" above it, click "artifacts", then click "target\GriefPrevention.jar".*
+- Added the ability to change or remove the GPFlags prefix on commands.
 - Added support for shorthand hex colors (&#rrggbb).
 - Added the `ViewContainers` claimflag which allows players to view, but not manipulate, any container on a claim.
 - Added the `ReadLecterns` claimflag which allows players to read but not manipulate any lectern with a book on a claim.
@@ -24,4 +25,4 @@ Download the latest release from the [Birdflop Discord](https://discord.gg/MBdsx
 - Fixed a bug where entering or exiting a claim from beyond world build height would allow the player to bypass PlayerClaimBorderEvent.
 - Fixed a bug where resizing claims could allow players to bypass PlayerClaimBorderEvent.
 - Fixed a bug where movement-based default flags would trigger at the wrong times. 
-- Removed the ability for players to set messages with `NoEnter`. My reasoning can be found in a pinned message in the [Birdflop Discord](https://discord.gg/MBdsxAR).
+- Removed the ability for players to set messages with `NoEnter`. *Players were often confused on why noenter required an extra parameter. Also, players often make the message something that doesn't describe why players can't walk into that area, and that confuses other players who try to walk into the claim. Finally, since players can format the messages however they want, they could use it impersonate another player, admin, or system message.*
