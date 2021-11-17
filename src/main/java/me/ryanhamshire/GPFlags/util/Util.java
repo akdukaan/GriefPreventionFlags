@@ -196,7 +196,6 @@ public class Util {
      * @return Formatted string
      */
     public static String getColString(String string) {
-        string = ChatColor.translateAlternateColorCodes('&', string);
         final Pattern hexPattern = Pattern.compile("&#([A-Fa-f0-9]{6})");
         Matcher matcher = hexPattern.matcher(string);
         StringBuffer buffer = new StringBuffer(string.length() + 4 * 8);
@@ -207,7 +206,8 @@ public class Util {
                     + COLOR_CHAR + group.charAt(2) + COLOR_CHAR + group.charAt(3)
                     + COLOR_CHAR + group.charAt(4) + COLOR_CHAR + group.charAt(5));
         }
-        return matcher.appendTail(buffer).toString();
+        string = matcher.appendTail(buffer).toString();
+        return ChatColor.translateAlternateColorCodes('&', string);
     }
 
     /**
