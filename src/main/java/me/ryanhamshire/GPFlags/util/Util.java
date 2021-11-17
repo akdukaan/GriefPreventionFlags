@@ -31,10 +31,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.bukkit.ChatColor.COLOR_CHAR;
+
 @SuppressWarnings("WeakerAccess")
 public class Util {
-
-    private static final Pattern HEX_PATTERN = Pattern.compile("<#([A-Fa-f0-9]){6}>");
 
     /**
      * Check if server is running a minimum Minecraft version
@@ -196,17 +196,18 @@ public class Util {
      * @return Formatted string
      */
     public static String getColString(String string) {
-        if (isRunningMinecraft(1, 16)) {
-            Matcher matcher = HEX_PATTERN.matcher(string);
-            while (matcher.find()) {
-                final ChatColor hexColor = ChatColor.of(matcher.group().substring(1, matcher.group().length() - 1));
-                final String before = string.substring(0, matcher.start());
-                final String after = string.substring(matcher.end());
-                string = before + hexColor + after;
-                matcher = HEX_PATTERN.matcher(string);
-            }
+        string = ChatColor.translateAlternateColorCodes('&', string);
+        final Pattern hexPattern = Pattern.compile("&#([A-Fa-f0-9]{6})");
+        Matcher matcher = hexPattern.matcher(string);
+        StringBuffer buffer = new StringBuffer(string.length() + 4 * 8);
+        while (matcher.find()) {
+            String group = matcher.group(1);
+            matcher.appendReplacement(buffer, COLOR_CHAR + "x"
+                    + COLOR_CHAR + group.charAt(0) + COLOR_CHAR + group.charAt(1)
+                    + COLOR_CHAR + group.charAt(2) + COLOR_CHAR + group.charAt(3)
+                    + COLOR_CHAR + group.charAt(4) + COLOR_CHAR + group.charAt(5));
         }
-        return ChatColor.translateAlternateColorCodes('&', string);
+        return matcher.appendTail(buffer).toString();
     }
 
     /**
