@@ -5,6 +5,7 @@ import me.ryanhamshire.GPFlags.GPFlags;
 import me.ryanhamshire.GPFlags.MessageSpecifier;
 import me.ryanhamshire.GPFlags.Messages;
 import me.ryanhamshire.GPFlags.SetFlagResult;
+import me.ryanhamshire.GPFlags.listener.RidableMoveListener;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.events.ClaimDeletedEvent;
@@ -49,7 +50,7 @@ public class FlagDef_ChangeBiome extends FlagDefinition {
                         if (!(loadChunk.isLoaded())) {
                             loadChunk.load();
                         }
-                        for (int y = 0; y <= 255; y++) {
+                        for (int y = 0; y <= world.getMaxHeight(); y++) {
                             world.setBiome(finalX, y, z, biome);
                         }
                     }
@@ -115,9 +116,45 @@ public class FlagDef_ChangeBiome extends FlagDefinition {
     }
 
     public void resetBiome(Claim claim) {
-        // Restore biome by matching with biome of block 2 north of claim
-        Biome biome = claim.getLesserBoundaryCorner().getBlock().getRelative(BlockFace.NORTH, 6).getBiome();
-        changeBiome(claim, biome);
+        try {
+            Class.forName("com.destroystokyo.paper.ParticleBuilder");
+
+            Location greater = claim.getGreaterBoundaryCorner();
+            Location lesser = claim.getLesserBoundaryCorner();
+            int lX = lesser.getBlockX();
+            int lZ = lesser.getBlockZ();
+            int gX = greater.getBlockX();
+            int gZ = greater.getBlockZ();
+            World world = lesser.getWorld();
+            assert world != null;
+            int maxHeight = greater.getBlockY();
+            int minHeight = lesser.getBlockY();
+            int i = 0;
+            for (int x = lX; x < gX; x++) {
+                int finalX = x;
+                BukkitRunnable runnable = new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        for (int z = lZ; z < gZ; z++) {
+                            Location loadLoc = new Location(world, finalX, 100, z);
+                            Chunk loadChunk = loadLoc.getChunk();
+                            if (!(loadChunk.isLoaded())) {
+                                loadChunk.load();
+                            }
+                            for (int y = minHeight; y <= maxHeight; y++) {
+                                // TODO getComputedBiome is WRONG
+                                world.setBiome(finalX, y, z, loadLoc.getBlock().getComputedBiome());
+                            }
+                        }
+                    }
+                };
+                runnable.runTaskLater(GPFlags.getInstance(), i++);
+            }
+        } catch (ClassNotFoundException ignored) {
+            // Restore biome by matching with biome of block 2 north of claim
+            Biome biome = claim.getLesserBoundaryCorner().getBlock().getRelative(BlockFace.NORTH, 6).getBiome();
+            changeBiome(claim, biome);
+        }
     }
 
     @EventHandler
