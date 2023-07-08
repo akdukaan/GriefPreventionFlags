@@ -57,6 +57,7 @@ public class FlagDef_NoMonsters extends FlagDefinition {
         Entity entity = event.getEntity();
         if (!Util.isMonster(entity)) return;
         if (entity.hasMetadata(this.ALLOW_TARGET_TAG)) return;
+        if (entity.customName() != null) return;
 
         Flag flag = this.getFlagInstanceAtLocation(target.getLocation(), null);
         if (flag == null) return;
@@ -74,6 +75,7 @@ public class FlagDef_NoMonsters extends FlagDefinition {
         if (!(damager instanceof LivingEntity)) return;
         if (!(target instanceof Player)) return;
         if (damager.hasMetadata(this.ALLOW_TARGET_TAG)) return;
+        if (damager.customName() != null) return;
 
         Flag flag = this.getFlagInstanceAtLocation(target.getLocation(), null);
         if (flag == null) return;
