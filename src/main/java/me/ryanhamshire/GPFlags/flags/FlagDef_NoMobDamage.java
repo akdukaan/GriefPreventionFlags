@@ -29,28 +29,31 @@ public class FlagDef_NoMobDamage extends FlagDefinition {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamage(EntityDamageEvent event) {
+        // check flag
         Entity entity = event.getEntity();
-
         Flag flag = this.getFlagInstanceAtLocation(entity.getLocation(), null);
         if (flag == null) return;
 
         // fix for GP discussion https://github.com/TechFortress/GriefPrevention/issues/1481
         if (event.getDamage() == 0 && event.getCause() == DamageCause.CUSTOM) return;
 
+        // Always allow cramming damage
         DamageCause cause = event.getCause();
+        if (cause == DamageCause.CRAMMING) return;
+
+        // Always allow attacks to players
+        if (entity instanceof Player) return;
+
+        // Always allow attacks from players
         if (cause == DamageCause.ENTITY_ATTACK || cause == DamageCause.PROJECTILE) {
             EntityDamageByEntityEvent event2 = (EntityDamageByEntityEvent) event;
             Entity attacker = event2.getDamager();
-
             if (attacker.getType() == EntityType.PLAYER) return;
-
             if (attacker instanceof Projectile) {
                 ProjectileSource source = ((Projectile) attacker).getShooter();
                 if (source instanceof Player) return;
             }
         }
-
-        if (cause == DamageCause.CRAMMING) return;
 
         if (entity instanceof Animals || entity instanceof WaterMob || entity.getType() == EntityType.VILLAGER || entity.getCustomName() != null) {
             event.setCancelled(true);
