@@ -12,7 +12,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class FlagDef_PlayerTime extends PlayerMovementFlagDefinition implements Listener {
 
@@ -20,19 +23,37 @@ public class FlagDef_PlayerTime extends PlayerMovementFlagDefinition implements 
         super(manager, plugin);
     }
 
-    @Override
-    public void onChangeClaim(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo) {
-        if (lastLocation == null) return;
-        Flag flag = this.getFlagInstanceAtLocation(to, player);
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        Player player = event.getPlayer();
+        Location respawnLoc = player.getRespawnLocation();
+        Location deathLoc = player.getLocation();
+        handleTime(player, deathLoc, respawnLoc);
+    }
 
-        if (flag == null) {
-            if (this.getFlagInstanceAtLocation(lastLocation, player) != null) {
-                player.resetPlayerTime();
-            }
+    @Override
+    public void onChangeClaim(Player player, Location from, Location to, Claim claimFrom, Claim claimTo) {
+        handleTime(player, from, to);
+    }
+
+    public void handleTime(Player player, @Nullable Location from, Location to) {
+        // Check if time flag changed
+        if (from == null) return;
+        Flag flagFrom = this.getFlagInstanceAtLocation(from, player);
+        Flag flagTo = this.getFlagInstanceAtLocation(to, player);
+        if (flagTo == flagFrom) return;
+
+        // Reset the time if moving from enabled to disabled
+        if (flagTo == null) {
+            player.resetPlayerTime();
             return;
         }
-        if (flag == this.getFlagInstanceAtLocation(lastLocation, player)) return;
 
+        // Set time to new flag
+        setPlayerTime(player, flagTo);
+    }
+
+    public void setPlayerTime(Player player, @NotNull Flag flag) {
         String time = flag.parameters;
         if (time.equalsIgnoreCase("day")) {
             player.setPlayerTime(0, false);
@@ -51,17 +72,8 @@ public class FlagDef_PlayerTime extends PlayerMovementFlagDefinition implements 
         Flag flag = this.getFlagInstanceAtLocation(player.getLocation(), player);
         if (flag == null) return;
 
-        String time = flag.parameters;
-        if (time.equalsIgnoreCase("day")) {
-            player.setPlayerTime(0, false);
-        } else if (time.equalsIgnoreCase("noon")) {
-            player.setPlayerTime(6000, false);
-        } else if (time.equalsIgnoreCase("night")) {
-            player.setPlayerTime(12566, false);
-        } else if (time.equalsIgnoreCase("midnight")) {
-            player.setPlayerTime(18000, false);
-        }
-
+        // Set time to new flag
+        setPlayerTime(player, flag);
     }
 
     @Override
