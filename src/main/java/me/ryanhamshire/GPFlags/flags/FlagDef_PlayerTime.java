@@ -49,19 +49,19 @@ public class FlagDef_PlayerTime extends PlayerMovementFlagDefinition implements 
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         Flag flag = this.getFlagInstanceAtLocation(player.getLocation(), player);
+        if (flag == null) return;
 
-        if (flag != null) {
-            String time = flag.parameters;
-            if (time.equalsIgnoreCase("day")) {
-                player.setPlayerTime(0, false);
-            } else if (time.equalsIgnoreCase("noon")) {
-                player.setPlayerTime(6000, false);
-            } else if (time.equalsIgnoreCase("night")) {
-                player.setPlayerTime(12566, false);
-            } else if (time.equalsIgnoreCase("midnight")) {
-                player.setPlayerTime(18000, false);
-            }
+        String time = flag.parameters;
+        if (time.equalsIgnoreCase("day")) {
+            player.setPlayerTime(0, false);
+        } else if (time.equalsIgnoreCase("noon")) {
+            player.setPlayerTime(6000, false);
+        } else if (time.equalsIgnoreCase("night")) {
+            player.setPlayerTime(12566, false);
+        } else if (time.equalsIgnoreCase("midnight")) {
+            player.setPlayerTime(18000, false);
         }
+
     }
 
     @Override
