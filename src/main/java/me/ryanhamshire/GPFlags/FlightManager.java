@@ -8,6 +8,7 @@ import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
 import me.ryanhamshire.GriefPrevention.events.ClaimDeletedEvent;
+import me.ryanhamshire.GriefPrevention.events.ClaimTransferEvent;
 import me.ryanhamshire.GriefPrevention.events.TrustChangedEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -40,6 +41,13 @@ public class FlightManager implements Listener {
         if (!fallImmune.contains(p)) return;
         e.setDamage(0);
         fallImmune.remove(p);
+    }
+
+    @EventHandler
+    public void onClaimTransfer(ClaimTransferEvent event) {
+        for (Player player : Util.getPlayersIn(event.getClaim())) {
+            manageFlightLater(player, 1, player.getLocation());
+        }
     }
 
     @EventHandler
