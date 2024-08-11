@@ -132,10 +132,6 @@ public class FlagDef_ChangeBiome extends FlagDefinition {
         return true;
     }
 
-    public void resetBiome(Long claimID) {
-        resetBiome(GriefPrevention.instance.dataStore.getClaim(claimID));
-    }
-
     public void resetBiome(Claim claim) {
         // Restore biome by matching with biome of block 2 north of claim
         Biome biome = claim.getLesserBoundaryCorner().getBlock().getRelative(BlockFace.NORTH, 6).getBiome();
