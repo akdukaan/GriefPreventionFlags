@@ -22,6 +22,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -207,15 +208,31 @@ public class FlightManager implements Listener {
         }
         if (flightAllowedAtNewLocation) {
             turnOnFlight(player);
-            return;
-        }
-        if (!flightAllowedAtNewLocation) {
+        } else {
             turnOffFlight(player);
-            return;
         }
     }
 
-    public static void turnOffFlight(@NotNull Player player) {
+    @EventHandler
+    public void onFlyToggle(PlayerToggleFlightEvent event) {
+        Player player = event.getPlayer();
+        Location location = player.getLocation();
+        Claim claim = GriefPrevention.instance.dataStore.getClaimAt(location, false, cachedClaim);
+        boolean manageFlight = gpfManagesFlight(player);
+        if (manageFlight) {
+            if (FlagDef_OwnerMemberFly.letPlayerFly(player, location, claim)) {
+                return;
+            }
+            if (FlagDef_OwnerFly.letPlayerFly(player, location, claim)) {
+                return;
+            }
+        }
+        if (!FlagDef_NoFlight.letPlayerFly(player, location, claim)) {
+            turnOffFlight(player);
+        }
+    }
+
+    private static void turnOffFlight(@NotNull Player player) {
         if (!player.getAllowFlight()) return;
         MessagingUtil.sendMessage(player, TextMode.Err, Messages.CantFlyHere);
         player.setFlying(false);
