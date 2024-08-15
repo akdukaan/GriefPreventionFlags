@@ -8,14 +8,9 @@ import me.ryanhamshire.GPFlags.SetFlagResult;
 import me.ryanhamshire.GPFlags.util.MessagingUtil;
 import me.ryanhamshire.GPFlags.util.Util;
 import me.ryanhamshire.GriefPrevention.Claim;
-import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.events.ClaimDeletedEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Biome;
-import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -31,13 +26,14 @@ public class FlagDef_ChangeBiome extends FlagDefinition {
     }
 
     /**
-     * What actually does all the biome changing stuff
-     * @param greater corner
-     * @param lesser corner
-     * @param biome the biome to set it to
-     * @return The number of ticks it's going to take to finish changing the biome
+     * Runs the other changeBiome and then refreshes chunks in the claim
+     * @param claim
+     * @param biome
      */
-    private int changeBiome(Location greater, Location lesser, Biome biome) {
+    private void changeBiome(Claim claim, Biome biome) {
+        Location greater = claim.getGreaterBoundaryCorner();
+        greater.setY(Util.getMaxHeight(greater));
+        Location lesser = claim.getLesserBoundaryCorner();
         int lX = (int) lesser.getX();
         int lY = (int) lesser.getY();
         int lZ = (int) lesser.getZ();
@@ -45,8 +41,10 @@ public class FlagDef_ChangeBiome extends FlagDefinition {
         int gY = (int) greater.getY();
         int gZ = (int) greater.getZ();
         World world = lesser.getWorld();
-        int i = 0;
+        int ticks = 0;
         for (int x = lX; x < gX; x++) {
+            // We don't loop over y because then all chunks would get loaded in the same runnable
+            // and it's better to split that up
             int finalX = x;
             BukkitRunnable runnable = new BukkitRunnable() {
                 @Override
@@ -63,28 +61,15 @@ public class FlagDef_ChangeBiome extends FlagDefinition {
                     }
                 }
             };
-            runnable.runTaskLater(GPFlags.getInstance(), i++);
+            runnable.runTaskLater(GPFlags.getInstance(), ticks++);
         }
-        return i;
-    }
-
-    /**
-     * Runs the other changeBiome and then refreshes chunks in the claim
-     * @param claim
-     * @param biome
-     */
-    private void changeBiome(Claim claim, Biome biome) {
-        Location greater = claim.getGreaterBoundaryCorner();
-        greater.setY(Util.getMaxHeight(greater));
-        Location lesser = claim.getLesserBoundaryCorner();
-        int i = changeBiome(greater, lesser, biome);
         BukkitRunnable runnable = new BukkitRunnable() {
             @Override
             public void run() {
                 refreshChunks(claim);
             }
         };
-        runnable.runTaskLater(GPFlags.getInstance(), i);
+        runnable.runTaskLater(GPFlags.getInstance(), ticks);
     }
 
     private void refreshChunks(Claim claim) {
@@ -133,9 +118,48 @@ public class FlagDef_ChangeBiome extends FlagDefinition {
     }
 
     public void resetBiome(Claim claim) {
-        // Restore biome by matching with biome of block 2 north of claim
-        Biome biome = claim.getLesserBoundaryCorner().getBlock().getRelative(BlockFace.NORTH, 6).getBiome();
-        changeBiome(claim, biome);
+        Location greater = claim.getGreaterBoundaryCorner();
+        greater.setY(Util.getMaxHeight(greater));
+        Location lesser = claim.getLesserBoundaryCorner();
+
+        int lX = (int) lesser.getX();
+        int lY = (int) lesser.getY();
+        int lZ = (int) lesser.getZ();
+        int gX = (int) greater.getX();
+        int gY = (int) greater.getY();
+        int gZ = (int) greater.getZ();
+        World world = lesser.getWorld();
+        int ticks = 0;
+        for (int x = lX; x < gX; x++) {
+            // We don't loop over y because then all chunks would get loaded in the same runnable
+            // and it's better to split that up
+            int finalX = x;
+            BukkitRunnable runnable = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    for (int z = lZ; z < gZ; z++) {
+                        Location loadLoc = new Location(world, finalX, 100, z);
+                        Chunk loadChunk = loadLoc.getChunk();
+                        if (!(loadChunk.isLoaded())) {
+                            loadChunk.load();
+                        }
+                        for (int y = lY; y <= gY; y++) {
+                            ChunkSnapshot chunkSnapshot = world.getEmptyChunkSnapshot(finalX >> 4, y >> 4, true, false);
+                            Biome biome = chunkSnapshot.getBiome(Math.floorMod(finalX, 16), Math.floorMod(y, 16), Math.floorMod(z, 16));
+                            world.setBiome(finalX, y, z, biome);
+                        }
+                    }
+                }
+            };
+            runnable.runTaskLater(GPFlags.getInstance(), ticks++);
+        }
+        BukkitRunnable runnable = new BukkitRunnable() {
+            @Override
+            public void run() {
+                refreshChunks(claim);
+            }
+        };
+        runnable.runTaskLater(GPFlags.getInstance(), ticks);
     }
 
     @EventHandler
