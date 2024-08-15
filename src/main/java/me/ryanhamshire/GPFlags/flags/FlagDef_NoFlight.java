@@ -26,6 +26,7 @@ public class FlagDef_NoFlight extends FlagDefinition {
 
     @EventHandler
     public void onFlyToggle(PlayerToggleFlightEvent event) {
+        // TODO let ownerfly and ownermemberfly override this
         Player player = event.getPlayer();
         Flag flag = getFlagInstanceAtLocation(player.getLocation(), player);
         if (flag == null) return;
