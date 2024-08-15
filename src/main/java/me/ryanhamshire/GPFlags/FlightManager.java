@@ -217,7 +217,7 @@ public class FlightManager implements Listener {
     public void onFlyToggle(PlayerToggleFlightEvent event) {
         Player player = event.getPlayer();
         Location location = player.getLocation();
-        Claim claim = GriefPrevention.instance.dataStore.getClaimAt(location, false, cachedClaim);
+        Claim claim = GriefPrevention.instance.dataStore.getClaimAt(location, false, null);
         boolean manageFlight = gpfManagesFlight(player);
         if (manageFlight) {
             if (FlagDef_OwnerMemberFly.letPlayerFly(player, location, claim)) {
