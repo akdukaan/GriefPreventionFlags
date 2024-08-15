@@ -215,7 +215,7 @@ public class FlightManager implements Listener {
         }
     }
 
-    private static void turnOffFlight(@NotNull Player player) {
+    public static void turnOffFlight(@NotNull Player player) {
         if (!player.getAllowFlight()) return;
         MessagingUtil.sendMessage(player, TextMode.Err, Messages.CantFlyHere);
         player.setFlying(false);

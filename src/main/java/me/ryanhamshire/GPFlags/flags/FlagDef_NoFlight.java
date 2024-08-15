@@ -6,6 +6,8 @@ import me.ryanhamshire.GriefPrevention.Claim;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerToggleFlightEvent;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,6 +24,13 @@ public class FlagDef_NoFlight extends FlagDefinition {
         return Util.shouldBypass(player, claim, flag);
     }
 
+    @EventHandler
+    public void onFlyToggle(PlayerToggleFlightEvent event) {
+        Player player = event.getPlayer();
+        Flag flag = getFlagInstanceAtLocation(player.getLocation(), player);
+        if (flag == null) return;
+        FlightManager.turnOffFlight(player);
+    }
 
     @Override
     public String getName() {
