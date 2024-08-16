@@ -1,7 +1,11 @@
 package me.ryanhamshire.GPFlags.listener;
 
+import me.ryanhamshire.GPFlags.Flag;
+import me.ryanhamshire.GPFlags.FlagManager;
+import me.ryanhamshire.GPFlags.GPFlags;
 import me.ryanhamshire.GPFlags.event.PlayerPostClaimBorderEvent;
 import me.ryanhamshire.GPFlags.event.PlayerPreClaimBorderEvent;
+import me.ryanhamshire.GPFlags.flags.FlagDefinition;
 import me.ryanhamshire.GPFlags.util.Util;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.events.ClaimResizeEvent;
@@ -33,5 +37,26 @@ public class ClaimResizeListener implements Listener {
                 Bukkit.getPluginManager().callEvent(borderEvent);
             }
         }
+
+        // Deal with claims
+        FlagManager manager = GPFlags.getInstance().getFlagManager();
+        Flag keepLoaded = manager.getRawClaimFlag(claimFrom, "KeepLoaded");
+        if (keepLoaded != null) {
+            FlagDefinition def = manager.getFlagDefinitionByName("KeepLoaded");
+            if (keepLoaded.getSet()) {
+                def.onFlagUnset(claimFrom);
+                def.onFlagSet(claimTo, null);
+            }
+        }
+
+        Flag changeBiome = manager.getRawClaimFlag(claimFrom, "ChangeBiome");
+        if (changeBiome != null) {
+            FlagDefinition def = manager.getFlagDefinitionByName("ChangeBiome");
+            if (changeBiome.getSet()) {
+                def.onFlagUnset(claimFrom);
+                def.onFlagSet(claimTo, changeBiome.getParameters());
+            }
+        }
+
     }
 }
