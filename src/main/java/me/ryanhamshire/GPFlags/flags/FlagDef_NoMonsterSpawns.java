@@ -34,7 +34,7 @@ public class FlagDef_NoMonsterSpawns extends FlagDefinition {
         if (reason == SpawnReason.SLIME_SPLIT) return;
 
         WorldSettings settings = this.settingsManager.get(event.getEntity().getWorld());
-        if (settings.noMonsterSpawnIgnoreSpawners && (reason == SpawnReason.SPAWNER || reason == SpawnReason.SPAWNER_EGG)) {
+        if (settings.noMonsterSpawnIgnoreSpawners && (reason == SpawnReason.SPAWNER || reason == SpawnReason.SPAWNER_EGG || reason == SpawnReason.TRIAL_SPAWNER)) {
             return;
         }
 

@@ -38,7 +38,7 @@ public class FlagDef_NoMonsters extends FlagDefinition {
         CreatureSpawnEvent.SpawnReason reason = event.getSpawnReason();
 
         WorldSettings settings = this.settingsManager.get(entity.getWorld());
-        if (settings.noMonsterSpawnIgnoreSpawners && (reason == SpawnReason.SPAWNER || reason == SpawnReason.SPAWNER_EGG)) {
+        if (settings.noMonsterSpawnIgnoreSpawners && (reason == SpawnReason.SPAWNER || reason == SpawnReason.SPAWNER_EGG || reason == SpawnReason.TRIAL_SPAWNER)) {
             entity.setMetadata(this.ALLOW_TARGET_TAG, new FixedMetadataValue(GPFlags.getInstance(), Boolean.TRUE));
             return;
         }
