@@ -219,14 +219,12 @@ public class FlightManager implements Listener {
         Location location = player.getLocation();
         Claim claim = GriefPrevention.instance.dataStore.getClaimAt(location, false, null);
         boolean manageFlight = gpfManagesFlight(player);
-        if (manageFlight) {
-            if (FlagDef_OwnerMemberFly.letPlayerFly(player, location, claim)) {
-                return;
-            }
-            if (FlagDef_OwnerFly.letPlayerFly(player, location, claim)) {
-                return;
-            }
-        }
+        if (!manageFlight) return;
+        
+        if (FlagDef_OwnerMemberFly.letPlayerFly(player, location, claim)) return;
+        if (FlagDef_OwnerFly.letPlayerFly(player, location, claim)) return;
+        
+        
         if (!FlagDef_NoFlight.letPlayerFly(player, location, claim)) {
             turnOffFlight(player);
         }
