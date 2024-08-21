@@ -1,8 +1,5 @@
 package me.ryanhamshire.GPFlags.listener;
 
-import me.ryanhamshire.GPFlags.Flag;
-import me.ryanhamshire.GPFlags.FlagManager;
-import me.ryanhamshire.GPFlags.GPFlags;
 import me.ryanhamshire.GPFlags.event.PlayerPostClaimBorderEvent;
 import me.ryanhamshire.GPFlags.event.PlayerPreClaimBorderEvent;
 import me.ryanhamshire.GPFlags.util.Util;
@@ -15,7 +12,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -25,7 +21,11 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Purpose is
@@ -39,7 +39,9 @@ public class PlayerListener implements Listener {
         Location locTo = event.getTo();
         Location locFrom = event.getFrom();
         Player player = event.getPlayer();
-        processMovement(locTo, locFrom, player, event);
+        if (flagsPreventMovement(locTo, locFrom, player, null)) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -47,7 +49,9 @@ public class PlayerListener implements Listener {
         Location locTo = event.getTo();
         Location locFrom = event.getFrom();
         Player player = event.getPlayer();
-        processMovement(locTo, locFrom, player, event);
+        if (flagsPreventMovement(locTo, locFrom, player)) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler
@@ -55,20 +59,20 @@ public class PlayerListener implements Listener {
         Location locTo = event.getTo();
         Location locFrom = event.getFrom();
         Vehicle vehicle = event.getVehicle();
-        // If either player weren't allowed in the claim, eject the players and
-        // teleport the banned players to the old location
-        for (Entity entity : vehicle.getPassengers()) {
+
+        ArrayList<Player> riders = new ArrayList<>();
+        List<Entity> passengers = vehicle.getPassengers();
+        for (Entity entity : passengers) {
             if (entity instanceof Player) {
                 Player player = ((Player) entity);
-                if (!processMovement(locTo, locFrom, player, null)) {
-                    vehicle.eject();
-                    player.teleport(locFrom);
-                }
+                riders.add(player);
             }
         }
-        // If boats are banned in the region,
-        // todo check the claim
-        Util.breakVehicle(vehicle, locFrom);
+
+        // If denied by noenter flag, break the vehicle
+        if (flagsPreventMovement(locTo, locFrom, riders.toArray(new Player[0]))) {
+            Util.breakVehicle(vehicle, locFrom);
+        }
     }
 
     @EventHandler
@@ -79,7 +83,9 @@ public class PlayerListener implements Listener {
             Player player = ((Player) entity);
             Location from = player.getLocation();
             Location to = vehicle.getLocation();
-            processMovement(to, from, player, event);
+            if (flagsPreventMovement(to, from, player)) {
+                event.setCancelled(true);
+            }
         }
     }
 
@@ -113,34 +119,41 @@ public class PlayerListener implements Listener {
         Bukkit.getPluginManager().callEvent(borderEvent);
     }
 
-
-
     /**
      * Takes in a movement and calls PreClaimBorderEvent if needed.
      * If the event was allowed, will call PostClaimBorderEvent
      * @param locTo
      * @param locFrom
      * @param player
-\     * @return If the movement was allowed
+     * @return If the movement was allowed
      */
-    public static boolean processMovement(Location locTo, Location locFrom, Player player) {
+    public static boolean flagsPreventMovement(Location locTo, Location locFrom, Player... players) {
         if (locTo.getBlockX() == locFrom.getBlockX() && locTo.getBlockY() == locFrom.getBlockY() && locTo.getBlockZ() == locFrom.getBlockZ()) {
-            return true;
+            return false;
         }
 
         Location locFromAdj = Util.getInBoundsLocation(locFrom);
         Location locToAdj = Util.getInBoundsLocation(locTo);
-        Claim lastClaim = dataStore.getPlayerData(player.getUniqueId()).lastClaim;
+        Player driver = players[0];
+        if (driver == null) return false;
+        Claim lastClaim = dataStore.getPlayerData(driver.getUniqueId()).lastClaim;
         Claim claimFrom = dataStore.getClaimAt(locFromAdj, false, lastClaim);
         Claim claimTo = dataStore.getClaimAt(locToAdj, false, null);
-        if (claimTo == claimFrom) return true;
+        if (claimTo == claimFrom) return false;
 
-        PlayerPreClaimBorderEvent playerPreClaimBorderEvent = new PlayerPreClaimBorderEvent(player, claimFrom, claimTo, locFromAdj, locToAdj);
-        Bukkit.getPluginManager().callEvent(playerPreClaimBorderEvent);
-        if (playerPreClaimBorderEvent.isCancelled()) return false;
+        ArrayList<PlayerPreClaimBorderEvent> events = new ArrayList<>();
+        for (Player passenger : players) {
+            PlayerPreClaimBorderEvent event = new PlayerPreClaimBorderEvent(passenger, claimFrom, claimTo, locFromAdj, locToAdj);
+            Bukkit.getPluginManager().callEvent(event);
+            if (event.isCancelled()) return true;
+            events.add(event);
+        }
 
-        Bukkit.getPluginManager().callEvent(new PlayerPostClaimBorderEvent(playerPreClaimBorderEvent));
-        return true;
+        // Now that we know everyone is allowed entry, lets call postclaimbordervent
+        for (PlayerPreClaimBorderEvent event : events) {
+            Bukkit.getPluginManager().callEvent(new PlayerPostClaimBorderEvent(event));
+        }
+        return false;
     }
 
 }

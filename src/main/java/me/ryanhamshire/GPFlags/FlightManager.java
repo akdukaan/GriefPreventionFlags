@@ -34,17 +34,6 @@ public class FlightManager implements Listener {
     private static final HashSet<Player> fallImmune = new HashSet<>();
 
     @EventHandler
-    private void onFall(EntityDamageEvent e) {
-        if (!(e.getEntity() instanceof Player)) return;
-        Player p = ((Player) e.getEntity());
-        EntityDamageEvent.DamageCause cause = e.getCause();
-        if (cause != EntityDamageEvent.DamageCause.FALL) return;
-        if (!fallImmune.contains(p)) return;
-        e.setDamage(0);
-        fallImmune.remove(p);
-    }
-
-    @EventHandler
     public void onClaimTransfer(ClaimTransferEvent event) {
         for (Player player : Util.getPlayersIn(event.getClaim())) {
             manageFlightLater(player, 1, player.getLocation());
@@ -90,22 +79,14 @@ public class FlightManager implements Listener {
     }
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        managePlayerFlight(player, null, player.getLocation());
-    }
-
-    @EventHandler
-    public void onRespawn(PlayerRespawnEvent event) {
-        Player player = event.getPlayer();
-        manageFlightLater(player, 1, null);
-    }
-
-    @EventHandler
-    public void onClaimDelete(ClaimDeletedEvent event) {
-        for (Player player : Util.getPlayersIn(event.getClaim())) {
-            managePlayerFlight(player, null, player.getLocation());
-        }
+    private void onFall(EntityDamageEvent e) {
+        if (!(e.getEntity() instanceof Player)) return;
+        Player p = ((Player) e.getEntity());
+        EntityDamageEvent.DamageCause cause = e.getCause();
+        if (cause != EntityDamageEvent.DamageCause.FALL) return;
+        if (!fallImmune.contains(p)) return;
+        e.setDamage(0);
+        fallImmune.remove(p);
     }
 
     /**
@@ -223,7 +204,6 @@ public class FlightManager implements Listener {
         
         if (FlagDef_OwnerMemberFly.letPlayerFly(player, location, claim)) return;
         if (FlagDef_OwnerFly.letPlayerFly(player, location, claim)) return;
-        
         
         if (!FlagDef_NoFlight.letPlayerFly(player, location, claim)) {
             turnOffFlight(player);

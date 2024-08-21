@@ -14,12 +14,14 @@ public class EntityMoveListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     private void onMove(EntityMoveEvent event) {
         List<Entity> passengers = event.getEntity().getPassengers();
-        if (passengers.size() == 0) return;
+        if (passengers.isEmpty()) return;
         Entity passenger = passengers.get(0);
         if (!(passenger instanceof Player)) return;
         Player rider = (Player) passenger;
         Location locTo = event.getTo();
         Location locFrom = event.getFrom();
-        PlayerListener.processMovement(locTo, locFrom, rider, event);
+        if (PlayerListener.flagsPreventMovement(locTo, locFrom, rider)) {
+            event.setCancelled(true);
+        }
     }
 }
