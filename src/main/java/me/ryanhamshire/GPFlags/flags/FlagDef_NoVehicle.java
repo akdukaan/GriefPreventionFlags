@@ -62,6 +62,7 @@ public class FlagDef_NoVehicle extends PlayerMovementFlagDefinition {
         if (!(entity instanceof Player)) return;
         Player player = ((Player) entity);
 
+        // Check if the player can bypass
         Flag flag = this.getFlagInstanceAtLocation(vehicle.getLocation(), player);
         if (flag == null) return;
         Claim claim = GriefPrevention.instance.dataStore.getClaimAt(vehicle.getLocation(), false, null);
