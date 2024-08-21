@@ -77,7 +77,6 @@ public class Util {
      * @param vehicle Vehicle to get item from
      * @return ItemStack that matches vehicle
      */
-    @Nullable
     public static ItemStack getItemFromVehicle(Vehicle vehicle) {
         if (vehicle instanceof Boat) {
             Boat boat = (Boat) vehicle;
