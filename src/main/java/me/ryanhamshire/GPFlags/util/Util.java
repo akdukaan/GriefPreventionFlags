@@ -11,12 +11,7 @@ import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Boat;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Vehicle;
+import org.bukkit.entity.*;
 import org.bukkit.entity.minecart.CommandMinecart;
 import org.bukkit.entity.minecart.ExplosiveMinecart;
 import org.bukkit.entity.minecart.HopperMinecart;
@@ -82,43 +77,14 @@ public class Util {
      * @param vehicle Vehicle to get item from
      * @return ItemStack that matches vehicle
      */
+    @Nullable
     public static ItemStack getItemFromVehicle(Vehicle vehicle) {
-        Material material = null;
         if (vehicle instanceof Boat) {
-            switch (((Boat) vehicle).getWoodType()) {
-                case BIRCH:
-                    material = Material.BIRCH_BOAT;
-                    break;
-                case ACACIA:
-                    material = Material.ACACIA_BOAT;
-                    break;
-                case JUNGLE:
-                    material = Material.JUNGLE_BOAT;
-                    break;
-                case REDWOOD:
-                    material = Material.SPRUCE_BOAT;
-                    break;
-                case DARK_OAK:
-                    material = Material.DARK_OAK_BOAT;
-                    break;
-                default:
-                    material = Material.OAK_BOAT;
-            }
-        } else if (vehicle instanceof RideableMinecart) {
-            material = Material.MINECART;
-        } else if (vehicle instanceof StorageMinecart) {
-            material = Material.CHEST_MINECART;
-        } else if (vehicle instanceof CommandMinecart) {
-            material = Material.COMMAND_BLOCK_MINECART;
-        } else if (vehicle instanceof ExplosiveMinecart) {
-            material = Material.TNT_MINECART;
-        } else if (vehicle instanceof HopperMinecart) {
-            material = Material.HOPPER_MINECART;
-        } else if (vehicle instanceof PoweredMinecart) {
-            material = Material.FURNACE_MINECART;
-        }
-        if (material != null) {
-            return new ItemStack(material);
+            Boat boat = (Boat) vehicle;
+            return new ItemStack(boat.getBoatMaterial());
+        } else if (vehicle instanceof Minecart) {
+            Minecart cart = (Minecart) vehicle;
+            return new ItemStack(cart.getMinecartMaterial());
         }
         return null;
     }
