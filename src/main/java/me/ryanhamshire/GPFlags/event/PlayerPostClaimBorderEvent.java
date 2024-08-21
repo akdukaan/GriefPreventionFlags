@@ -10,14 +10,13 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Called when a player enters/exits a claim
+ * Calls onChangeClaim on every movement flag
  */
-@SuppressWarnings("unused")
 public class PlayerPostClaimBorderEvent extends PlayerEvent {
 
     private static HandlerList handlerList = new HandlerList();
     private Claim claimFrom, claimTo;
     private Location locFrom, locTo;
-    private boolean cancelled = false;
 
     public PlayerPostClaimBorderEvent(Player who, Claim claimFrom, Claim claimTo, Location from, Location to) {
         super(who);

@@ -24,7 +24,7 @@ public class ClaimModifiedListener implements Listener {
 
             // Resizing a claim to be smaller and falling on the outside
             if (!claimTo.contains(loc, false, false) && claimFrom.contains(loc, false, false)) {
-                PlayerPreClaimBorderEvent borderEvent = new PlayerPreClaimBorderEvent(player, claimFrom, null, claimFrom.getLesserBoundaryCorner(), loc);
+                PlayerPreClaimBorderEvent borderEvent = new PlayerPreClaimBorderEvent(player, claimFrom, null, loc, loc);
                 Bukkit.getPluginManager().callEvent(borderEvent);
                 if (!borderEvent.isCancelled()) {
                     Bukkit.getPluginManager().callEvent(new PlayerPostClaimBorderEvent(borderEvent));
@@ -32,7 +32,7 @@ public class ClaimModifiedListener implements Listener {
             }
             // Resizing a claim to be larger and falling on the inside
             if (claimTo.contains(loc, false, false) && !claimFrom.contains(loc, false, false)) {
-                PlayerPreClaimBorderEvent borderEvent = new PlayerPreClaimBorderEvent(player, null, claimTo, claimTo.getLesserBoundaryCorner(), loc);
+                PlayerPreClaimBorderEvent borderEvent = new PlayerPreClaimBorderEvent(player, null, claimTo, loc, loc);
                 Bukkit.getPluginManager().callEvent(borderEvent);
                 if (!borderEvent.isCancelled()) {
                     Bukkit.getPluginManager().callEvent(new PlayerPostClaimBorderEvent(borderEvent));

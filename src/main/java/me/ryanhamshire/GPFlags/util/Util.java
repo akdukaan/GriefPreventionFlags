@@ -18,6 +18,7 @@ import org.bukkit.entity.minecart.HopperMinecart;
 import org.bukkit.entity.minecart.PoweredMinecart;
 import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.entity.minecart.StorageMinecart;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.util.StringUtil;
@@ -276,14 +277,22 @@ public class Util {
         }
     }
 
-    public static Location getInBoundsLocation(Player p) {
-        Location loc = p.getLocation();
+    public static Location getInBoundsLocation(Location loc) {
         World world = loc.getWorld();
-        int maxHeight = Util.getMaxHeight(world);
-        if (loc.getBlockY() >= maxHeight) {
-            loc.setY(maxHeight - 1);
+        int maxHeight = getMaxHeight(world);
+        if (loc.getBlockY() > maxHeight) {
+            loc.setY(maxHeight);
+            return loc;
+        }
+        int minHeight = getMinHeight(world);
+        if (loc.getBlockY() < minHeight) {
+            loc.setY(minHeight);
         }
         return loc;
+    }
+
+    public static Location getInBoundsLocation(Player p) {
+        return getInBoundsLocation(p.getLocation());
     }
 
     public static boolean isClaimOwner(Claim c, Player p) {
@@ -342,6 +351,37 @@ public class Util {
             def = def.substring(0, def.length() - 4);
         }
         return def;
+    }
+
+    private static ArrayList<ItemStack> getDrops(Vehicle vehicle) {
+        ArrayList<ItemStack> drops = new ArrayList<>();
+        if (vehicle.isValid()) return drops;
+
+        if (vehicle instanceof Boat) {
+            Boat boat = (Boat) vehicle;
+            drops.add(new ItemStack(boat.getBoatMaterial()));
+        } else if (vehicle instanceof Minecart) {
+            Minecart cart = (Minecart) vehicle;
+            drops.add(new ItemStack(cart.getMinecartMaterial()));
+        }
+        if (!(vehicle instanceof InventoryHolder)) return drops;
+
+        InventoryHolder holder = (InventoryHolder) vehicle;
+        for (ItemStack stack : holder.getInventory()) {
+            drops.add(stack);
+        }
+        return drops;
+    }
+
+    public static void breakVehicle(Vehicle vehicle, Location location) {
+        if (!vehicle.isValid()) return;
+        ArrayList<ItemStack> drops = getDrops(vehicle);
+        World world = vehicle.getWorld();
+        vehicle.eject();
+        vehicle.remove();
+        for (ItemStack stack : drops) {
+            world.dropItem(location, stack);
+        }
     }
 
 }

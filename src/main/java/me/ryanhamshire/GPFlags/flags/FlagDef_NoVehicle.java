@@ -6,24 +6,26 @@ import me.ryanhamshire.GPFlags.GPFlags;
 import me.ryanhamshire.GPFlags.MessageSpecifier;
 import me.ryanhamshire.GPFlags.Messages;
 import me.ryanhamshire.GPFlags.TextMode;
-import me.ryanhamshire.GPFlags.util.Util; 
+import me.ryanhamshire.GPFlags.event.PlayerPostClaimBorderEvent;
+import me.ryanhamshire.GPFlags.listener.PlayerListener;
+import me.ryanhamshire.GPFlags.util.Util;
 import me.ryanhamshire.GPFlags.util.MessagingUtil;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import org.bukkit.Location;
-import org.bukkit.entity.Boat;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Minecart;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Vehicle;
+import org.bukkit.World;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -44,65 +46,62 @@ public class FlagDef_NoVehicle extends PlayerMovementFlagDefinition {
         return false;
     }
 
-    // todo this should be moved to PlayerListener.java
     @EventHandler
     private void onVehicleMove(VehicleMoveEvent event) {
+        // Check if another flag denies the movement
         Vehicle vehicle = event.getVehicle();
         List<Entity> passengers = vehicle.getPassengers();
-        if (passengers.size() == 0) return;
+        if (passengers.isEmpty()) return;
         Entity passenger = passengers.get(0);
         if (!(passenger instanceof Player)) return;
         Player player = (Player) passenger;
-        handleVehicleMovement(player, vehicle, event.getFrom(), event.getTo(), false);
+        if (!PlayerListener.processMovement(event.getTo(), event.getFrom(), player, null)) return;
+
+        // Check if NoVehicle denies the movement
+        Flag flag = this.getFlagInstanceAtLocation(event.getTo(), player);
+        if (flag == null) return;
+        Claim claim = GriefPrevention.instance.dataStore.getClaimAt(event.getTo(), false, null);
+        if (Util.shouldBypass(player, claim, flag)) return;
+
+        // Break the vehicle since we can't cancel VehicleMoveEvent
+        breakVehicle(vehicle, event.getFrom());
+        MessagingUtil.sendMessage(player, TextMode.Err, Messages.NoVehicleAllowed);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler
     private void onTeleport(PlayerTeleportEvent event) {
+        // Check if the tp will be allowed
         Player player = event.getPlayer();
+        Location to = event.getTo();
+        if (!PlayerListener.processMovement(to, event.getFrom(), player, null)) return;
+
+        // Check if NoVehicle applies
         Entity entity = player.getVehicle();
         if (!(entity instanceof Vehicle)) return;
-        handleVehicleMovement(player, (Vehicle) entity, event.getFrom(), event.getTo(), true);
-    }
+        Flag flag = this.getFlagInstanceAtLocation(to, player);
+        if (flag == null) return;
+        Claim claim = GriefPrevention.instance.dataStore.getClaimAt(to, false, null);
+        if (Util.shouldBypass(player, claim, flag)) return;
 
-    private void handleVehicleMovement(Player player, Vehicle vehicle, Location locFrom, Location locTo, boolean isTeleportEvent) {
-        Flag flag = this.getFlagInstanceAtLocation(locTo, player);
-        if (flag != null) {
-            Claim claim = GriefPrevention.instance.dataStore.getClaimAt(locTo, false, null);
-            if (Util.shouldBypass(player, claim, flag)) return;
-
-            if (isTeleportEvent) {
-                player.leaveVehicle();
-                MessagingUtil.sendMessage(player, TextMode.Err, Messages.NoVehicleAllowed);
-                return;
-            }
-            vehicle.eject();
-            ItemStack itemStack = Util.getItemFromVehicle(vehicle);
-            if (itemStack != null) {
-                if (vehicle.isValid()) {
-                    vehicle.getWorld().dropItem(locFrom, itemStack);
-                    vehicle.remove();
-                }
-            }
-            MessagingUtil.sendMessage(player, TextMode.Err, Messages.NoVehicleAllowed);
-        }
+        // Allow the movement but make the player leave the vehicle first
+        player.leaveVehicle();
+        MessagingUtil.sendMessage(player, TextMode.Err, Messages.NoVehicleAllowed);
     }
 
     @EventHandler
     private void onMount(VehicleEnterEvent event) {
         Entity entity = event.getEntered();
         Vehicle vehicle = event.getVehicle();
-        if (entity instanceof Player && (vehicle instanceof Boat || vehicle instanceof Minecart)) {
-            Player player = ((Player) entity);
+        if (!(entity instanceof Player)) return;
+        Player player = ((Player) entity);
 
-            Flag flag = this.getFlagInstanceAtLocation(vehicle.getLocation(), player);
-            if (flag != null) {
-                Claim claim = GriefPrevention.instance.dataStore.getClaimAt(vehicle.getLocation(), false, null);
-                if (!Util.shouldBypass(player, claim, flag)) {
-                    event.setCancelled(true);
-                    MessagingUtil.sendMessage(player, TextMode.Err, Messages.NoEnterVehicle);
-                }
-            }
-        }
+        Flag flag = this.getFlagInstanceAtLocation(vehicle.getLocation(), player);
+        if (flag == null) return;
+        Claim claim = GriefPrevention.instance.dataStore.getClaimAt(vehicle.getLocation(), false, null);
+        if (Util.shouldBypass(player, claim, flag)) return;
+
+        event.setCancelled(true);
+        MessagingUtil.sendMessage(player, TextMode.Err, Messages.NoEnterVehicle);
     }
 
     @EventHandler
