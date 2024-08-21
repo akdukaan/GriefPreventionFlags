@@ -63,6 +63,7 @@ public class FlagDef_PlayerWeather extends PlayerMovementFlagDefinition implemen
         }
     }
 
+    // todo remove this and most other calls to PlayerJoinEvent and PlayerRespawnEvent
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
