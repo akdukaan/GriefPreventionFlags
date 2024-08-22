@@ -7,7 +7,6 @@ import me.ryanhamshire.GPFlags.util.Util;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
-import me.ryanhamshire.GriefPrevention.events.ClaimDeletedEvent;
 import me.ryanhamshire.GriefPrevention.events.ClaimTransferEvent;
 import me.ryanhamshire.GriefPrevention.events.TrustChangedEvent;
 import org.bukkit.Bukkit;
@@ -20,8 +19,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,17 +29,6 @@ import java.util.UUID;
 
 public class FlightManager implements Listener {
     private static final HashSet<Player> fallImmune = new HashSet<>();
-
-    @EventHandler
-    private void onFall(EntityDamageEvent e) {
-        if (!(e.getEntity() instanceof Player)) return;
-        Player p = ((Player) e.getEntity());
-        EntityDamageEvent.DamageCause cause = e.getCause();
-        if (cause != EntityDamageEvent.DamageCause.FALL) return;
-        if (!fallImmune.contains(p)) return;
-        e.setDamage(0);
-        fallImmune.remove(p);
-    }
 
     @EventHandler
     public void onClaimTransfer(ClaimTransferEvent event) {
@@ -85,48 +71,46 @@ public class FlightManager implements Listener {
     }
 
     @EventHandler
-    public void onChangeClaim(PlayerPostClaimBorderEvent event) {
+    public void onEnterNewClaim(PlayerPostClaimBorderEvent event) {
+        System.out.println("FlightManager was listening");
         manageFlightLater(event.getPlayer(), 1, event.getLocFrom());
     }
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        managePlayerFlight(player, null, player.getLocation());
-    }
-
-    @EventHandler
-    public void onRespawn(PlayerRespawnEvent event) {
-        Player player = event.getPlayer();
-        manageFlightLater(player, 1, null);
-    }
-
-    @EventHandler
-    public void onClaimDelete(ClaimDeletedEvent event) {
-        for (Player player : Util.getPlayersIn(event.getClaim())) {
-            managePlayerFlight(player, null, player.getLocation());
-        }
+    private void onFall(EntityDamageEvent e) {
+        if (!(e.getEntity() instanceof Player)) return;
+        Player p = ((Player) e.getEntity());
+        EntityDamageEvent.DamageCause cause = e.getCause();
+        if (cause != EntityDamageEvent.DamageCause.FALL) return;
+        if (!fallImmune.contains(p)) return;
+        e.setDamage(0);
+        fallImmune.remove(p);
     }
 
     /**
-     * Runs a manage flight operation between the oldLocation and the location that the player will be in ticks ticks
+     * Runs a manage flight operation between the oldLocation now and the location that the player will be in ticks ticks
      * @param player
      * @param ticks Number of ticks to wait before calculating new flight allow status and managing flight.
      * @param oldLocation If provided, will be able to avoid running a manage flight operation if the new status after ticks ticks is the same
      */
     public static void manageFlightLater(@NotNull Player player, int ticks, @Nullable Location oldLocation) {
         if (oldLocation == null) {
+            System.out.println("old was null bad");
             Bukkit.getScheduler().runTaskLater(GPFlags.getInstance(), () -> {
                 managePlayerFlight(player, null, player.getLocation());
             }, ticks);
+            System.out.println("Old location null bad");
             return;
         }
+        System.out.println("Not null old good");
         // if oldLocation is passed in, we want to calculate that value immediately
         PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId());
         Boolean oldFlightAllowedStatus = gpfAllowsFlight(player, oldLocation, playerData.lastClaim);
         Bukkit.getScheduler().runTaskLater(GPFlags.getInstance(), () -> {
             Boolean newFlightAllowedStatus = gpfAllowsFlight(player, player.getLocation(), playerData.lastClaim);
             managePlayerFlight(player, oldFlightAllowedStatus, newFlightAllowedStatus);
+            System.out.println("old statys was " + oldFlightAllowedStatus);
+            System.out.println("new status was " + newFlightAllowedStatus);
         }, ticks);
     }
 
@@ -223,7 +207,6 @@ public class FlightManager implements Listener {
         
         if (FlagDef_OwnerMemberFly.letPlayerFly(player, location, claim)) return;
         if (FlagDef_OwnerFly.letPlayerFly(player, location, claim)) return;
-        
         
         if (!FlagDef_NoFlight.letPlayerFly(player, location, claim)) {
             turnOffFlight(player);

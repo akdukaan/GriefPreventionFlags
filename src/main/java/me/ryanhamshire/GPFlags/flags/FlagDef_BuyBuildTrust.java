@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -58,22 +59,11 @@ public class FlagDef_BuyBuildTrust extends PlayerMovementFlagDefinition {
     }
 
     @Override
-    public void onChangeClaim(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo) {
-        Flag flag = this.getFlagInstanceAtLocation(to, player);
-        if (flag == null) return;
+    public void onChangeClaim(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo, @Nullable Flag flagFrom, @Nullable Flag flagTo) {
+        if (flagTo == null) return;
 
         if (claimTo == null) return;
         if (claimTo.getPermission(player.getUniqueId().toString()) == ClaimPermission.Build) return;
-        MessagingUtil.sendMessage(player, TextMode.Info, Messages.BuildTrustPrice, flag.parameters);
-    }
-
-    @EventHandler
-    public void onJoin(PlayerJoinEvent e) {
-        Player player = e.getPlayer();
-        Flag flag = this.getFlagInstanceAtLocation(player.getLocation(), player);
-        if (flag == null) return;
-        Claim claim = GriefPrevention.instance.dataStore.getClaimAt(player.getLocation(), false, null);
-        if (claim.getPermission(e.getPlayer().getUniqueId().toString()) == ClaimPermission.Build) return;
-        MessagingUtil.sendMessage(player, TextMode.Info, Messages.BuildTrustPrice, flag.parameters);
+        MessagingUtil.sendMessage(player, TextMode.Info, Messages.BuildTrustPrice, flagTo.parameters);
     }
 }

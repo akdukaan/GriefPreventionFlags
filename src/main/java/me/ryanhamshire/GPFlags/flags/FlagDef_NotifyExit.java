@@ -20,17 +20,17 @@ public class FlagDef_NotifyExit extends PlayerMovementFlagDefinition {
     }
 
     @Override
-    public void onChangeClaim(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo) {
-        if (claimFrom == null) return;
-        Flag flag = GPFlags.getInstance().getFlagManager().getEffectiveFlag(lastLocation, this.getName(), claimFrom);
-        if (flag == null) return;
+    public void onChangeClaim(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo, @Nullable Flag flagFrom, @Nullable Flag flagTo) {
+        if (flagFrom == null) return;
 
-        if (shouldNotify(player, claimFrom)) notifyExit(flag, claimFrom, player);
+        if (shouldNotify(player, claimFrom)) {
+            notifyExit(flagFrom, claimFrom, player);
+        }
     }
 
     public boolean shouldNotify(@NotNull Player p, @Nullable Claim c) {
         if (c == null) return false;
-        UUID ownerID = c.getOwnerID();
+        UUID ownerID = c.ownerID;
         if (ownerID == null) return false;
         Player owner = Bukkit.getPlayer(ownerID);
         if (owner == null) return false;
@@ -42,7 +42,7 @@ public class FlagDef_NotifyExit extends PlayerMovementFlagDefinition {
     }
 
     public void notifyExit(@NotNull Flag flag, @NotNull Claim claim, @NotNull Player player) {
-        Player owner = Bukkit.getPlayer(claim.getOwnerID());
+        Player owner = Bukkit.getPlayer(claim.ownerID);
         if (owner == null) return;
         if (owner.getName().equals(player.getName())) return;
         String param = flag.parameters;

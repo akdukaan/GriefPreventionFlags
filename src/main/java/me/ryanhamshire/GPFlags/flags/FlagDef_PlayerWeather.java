@@ -11,10 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.WeatherType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,33 +21,16 @@ public class FlagDef_PlayerWeather extends PlayerMovementFlagDefinition implemen
         super(manager, plugin);
     }
 
-    @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent event) {
-        Player player = event.getPlayer();
-        Location respawnLoc = player.getRespawnLocation();
-        Location deathLoc = player.getLocation();
-        handleWeather(player, deathLoc, respawnLoc);
-    }
-
     @Override
-    public void onChangeClaim(Player player, Location from, Location to, Claim claimFrom, Claim claimTo) {
-        handleWeather(player, from, to);
-    }
-
-    public void handleWeather(Player player, @Nullable Location from, Location to) {
-        // Check if weather flag changed
-        if (from == null) return;
-        Flag flagFrom = this.getFlagInstanceAtLocation(from, player);
-        Flag flagTo = this.getFlagInstanceAtLocation(to, player);
-        if (flagTo == flagFrom) return;
-
+    public void onChangeClaim(Player player, Location from, Location to, Claim claimFrom, Claim claimTo, @Nullable Flag flagFrom, @Nullable Flag flagTo) {
         // Reset the weather if moving from enabled to disabled
-        if (flagTo == null) {
+        if (flagTo == null && flagFrom != null) {
             player.resetPlayerWeather();
             return;
         }
 
-        // Set weather to new flag
+        // Set weather to new flag if exists
+        if (flagTo == null) return;
         setPlayerWeather(player, flagTo);
     }
 
@@ -61,16 +41,6 @@ public class FlagDef_PlayerWeather extends PlayerMovementFlagDefinition implemen
         } else if (weather.equalsIgnoreCase("rain")) {
             player.setPlayerWeather(WeatherType.DOWNFALL);
         }
-    }
-
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        Flag flag = this.getFlagInstanceAtLocation(player.getLocation(), player);
-        if (flag == null) return;
-
-        // Set weather to new flag
-        setPlayerWeather(player, flag);
     }
 
     @Override

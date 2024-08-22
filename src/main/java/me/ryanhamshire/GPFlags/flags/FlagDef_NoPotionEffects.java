@@ -14,6 +14,7 @@ import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.Nullable;
 
 public class FlagDef_NoPotionEffects extends PlayerMovementFlagDefinition implements Listener {
 
@@ -44,18 +45,17 @@ public class FlagDef_NoPotionEffects extends PlayerMovementFlagDefinition implem
     }
 
     @Override
-    public void onChangeClaim(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo) {
-        Flag flag = this.getFlagInstanceAtLocation(to, player);
-        if (flag == null) return;
+    public void onChangeClaim(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo, @Nullable Flag flagFrom, @Nullable Flag flagTo) {
+        if (flagTo == null) return;
         if (player.hasPermission("gpflags.bypass.nopotioneffects")) return;
 
         for (PotionEffect potionEffect : player.getActivePotionEffects()) {
             PotionEffectType effectType = potionEffect.getType();
 
-            if (flag.parameters.equalsIgnoreCase("all")) {
+            if (flagTo.parameters.equalsIgnoreCase("all")) {
                 player.removePotionEffect(effectType);
             } else {
-                String[] paramArray = flag.getParametersArray();
+                String[] paramArray = flagTo.getParametersArray();
                 for (String string : paramArray) {
                     if (effectType.getName().equalsIgnoreCase(string)) {
                         player.removePotionEffect(effectType);
@@ -88,26 +88,6 @@ public class FlagDef_NoPotionEffects extends PlayerMovementFlagDefinition implem
             if (effectType.getName().equalsIgnoreCase(string)) {
                 event.setCancelled(true);
                 return;
-            }
-        }
-    }
-
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        Flag flag = this.getFlagInstanceAtLocation(player.getLocation(), player);
-        if (flag == null) return;
-        for (PotionEffect potionEffect : player.getActivePotionEffects()) {
-            PotionEffectType effectType = potionEffect.getType();
-            String[] paramArray = flag.getParametersArray();
-            if (flag.parameters.equalsIgnoreCase("all")) {
-                player.removePotionEffect(effectType);
-            } else {
-                for (String string : paramArray) {
-                    if (effectType.getName().equalsIgnoreCase(string)) {
-                        player.removePotionEffect(effectType);
-                    }
-                }
             }
         }
     }

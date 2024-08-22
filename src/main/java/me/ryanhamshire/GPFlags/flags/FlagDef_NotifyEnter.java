@@ -24,17 +24,17 @@ public class FlagDef_NotifyEnter extends PlayerMovementFlagDefinition {
     }
 
     @Override
-    public void onChangeClaim(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo) {
-        if (claimTo == null) return;
-        Flag flag = GPFlags.getInstance().getFlagManager().getEffectiveFlag(to, this.getName(), claimTo);
-        if (flag == null) return;
+    public void onChangeClaim(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo, @Nullable Flag flagFrom, @Nullable Flag flagTo) {
+        if (flagTo == null) return;
 
-        if (shouldNotify(player, claimTo)) notifyEntry(flag, claimTo, player);
+        if (shouldNotify(player, claimTo)) {
+            notifyEntry(flagTo, claimTo, player);
+        }
     }
 
     public boolean shouldNotify(@NotNull Player p, @Nullable Claim c) {
         if (c == null) return false;
-        UUID ownerID = c.getOwnerID();
+        UUID ownerID = c.ownerID;
         if (ownerID == null) return false;
         Player owner = Bukkit.getPlayer(ownerID);
         if (owner == null) return false;
@@ -46,7 +46,7 @@ public class FlagDef_NotifyEnter extends PlayerMovementFlagDefinition {
     }
 
     public void notifyEntry(@NotNull Flag flag, @NotNull Claim claim, @NotNull Player player) {
-        Player owner = Bukkit.getPlayer(claim.getOwnerID());
+        Player owner = Bukkit.getPlayer(claim.ownerID);
         if (owner == null) return;
         if (owner.getName().equals(player.getName())) return;
         String param = flag.parameters;
@@ -55,19 +55,6 @@ public class FlagDef_NotifyEnter extends PlayerMovementFlagDefinition {
         }
         MessagingUtil.sendMessage(owner, TextMode.Info, Messages.NotifyEnter, player.getName(), param);
 
-    }
-
-    @EventHandler
-    public void onJoin(PlayerJoinEvent e) {
-        Player player = e.getPlayer();
-        Location location = player.getLocation();
-        PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId());
-        Claim claim = GriefPrevention.instance.dataStore.getClaimAt(location, false, playerData.lastClaim);
-        if (claim == null) return;
-        Flag flag = GPFlags.getInstance().getFlagManager().getEffectiveFlag(location, this.getName(), claim);
-        if (flag == null) return;
-
-        if (shouldNotify(player, claim)) notifyEntry(flag, claim, player);
     }
 
     @Override

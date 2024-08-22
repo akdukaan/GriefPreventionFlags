@@ -8,16 +8,9 @@ import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
 import org.bukkit.*;
 import org.bukkit.block.Biome;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.*;
-import org.bukkit.entity.minecart.CommandMinecart;
-import org.bukkit.entity.minecart.ExplosiveMinecart;
-import org.bukkit.entity.minecart.HopperMinecart;
-import org.bukkit.entity.minecart.PoweredMinecart;
-import org.bukkit.entity.minecart.RideableMinecart;
-import org.bukkit.entity.minecart.StorageMinecart;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.util.StringUtil;
@@ -276,26 +269,34 @@ public class Util {
         }
     }
 
-    public static Location getInBoundsLocation(Player p) {
-        Location loc = p.getLocation();
+    public static Location getInBoundsLocation(Location loc) {
         World world = loc.getWorld();
-        int maxHeight = Util.getMaxHeight(world);
-        if (loc.getBlockY() >= maxHeight) {
-            loc.setY(maxHeight - 1);
+        int maxHeight = getMaxHeight(world);
+        if (loc.getBlockY() > maxHeight) {
+            loc.setY(maxHeight);
+            return loc;
+        }
+        int minHeight = getMinHeight(world);
+        if (loc.getBlockY() < minHeight) {
+            loc.setY(minHeight);
         }
         return loc;
     }
 
+    public static Location getInBoundsLocation(Player p) {
+        return getInBoundsLocation(p.getLocation());
+    }
+
     public static boolean isClaimOwner(Claim c, Player p) {
         if (c == null) return false;
-        if (c.getOwnerID() == null) return false;
-        return c.getOwnerID().equals(p.getUniqueId());
+        if (c.ownerID == null) return false;
+        return c.ownerID.equals(p.getUniqueId());
     }
 
     public static boolean shouldBypass(@NotNull Player p, @Nullable Claim c, @NotNull String basePerm) {
         if (p.hasPermission(basePerm)) return true;
         if (c == null) return p.hasPermission(basePerm + ".nonclaim");
-        if (c.getOwnerID() == null && p.hasPermission(basePerm + ".adminclaim")) return true;
+        if (c.ownerID == null && p.hasPermission(basePerm + ".adminclaim")) return true;
         if (isClaimOwner(c, p) && p.hasPermission(basePerm + ".ownclaim")) return true;
         if (canManage(c, p) && p.hasPermission(basePerm + ".manage")) return true;
         if (canBuild(c, p) && (p.hasPermission(basePerm + ".build") || p.hasPermission(basePerm + ".edit"))) return true;
@@ -342,6 +343,78 @@ public class Util {
             def = def.substring(0, def.length() - 4);
         }
         return def;
+    }
+
+    private static ArrayList<ItemStack> getDrops(Vehicle vehicle) {
+        ArrayList<ItemStack> drops = new ArrayList<>();
+        if (!vehicle.isValid()) return drops;
+
+        if (vehicle instanceof Boat) {
+            Boat boat = (Boat) vehicle;
+            drops.add(new ItemStack(boat.getBoatMaterial()));
+        } else if (vehicle instanceof Minecart) {
+            Minecart cart = (Minecart) vehicle;
+            drops.add(new ItemStack(cart.getMinecartMaterial()));
+        }
+        if (!(vehicle instanceof InventoryHolder)) return drops;
+
+        InventoryHolder holder = (InventoryHolder) vehicle;
+        for (ItemStack stack : holder.getInventory()) {
+            drops.add(stack);
+        }
+        return drops;
+    }
+
+    public static void breakVehicle(Vehicle vehicle, Location location) {
+        if (!vehicle.isValid()) {
+            return;
+        }
+        ArrayList<ItemStack> drops = getDrops(vehicle);
+        World world = vehicle.getWorld();
+        vehicle.eject();
+        vehicle.remove();
+        for (ItemStack stack : drops) {
+            world.dropItem(location, stack);
+        }
+    }
+
+    /**
+     * Get the list of Players who move with this player
+     * @param entity
+     * @return
+     */
+    public static Set<Player> getMovementGroup(Entity entity) {
+        Set<Player> group = new HashSet<>();
+
+        // Add the entity if it's a person
+        if (entity instanceof Player) {
+            Player player = (Player) entity;
+            group.add(player);
+        }
+
+        // Add everyone riding the entity
+        List<Entity> passengers = entity.getPassengers();
+        for (Entity passenger : passengers) {
+            if (passenger instanceof Player) {
+                Player person = ((Player) passenger);
+                group.add(person);
+            }
+        }
+
+        // Get all passengers riding the same vehicle as entity
+        Entity mount = entity.getVehicle();
+        if (mount instanceof Vehicle) {
+            Vehicle vehicle = (Vehicle) mount;
+            passengers = vehicle.getPassengers();
+            for (Entity passenger : passengers) {
+                if (passenger instanceof Player) {
+                    Player person = ((Player) passenger);
+                    group.add(person);
+                }
+            }
+        }
+
+        return group;
     }
 
 }

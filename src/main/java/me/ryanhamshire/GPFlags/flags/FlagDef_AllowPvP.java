@@ -31,6 +31,8 @@ import me.ryanhamshire.GPFlags.WorldSettings;
 
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.events.PreventPvPEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class FlagDef_AllowPvP extends PlayerMovementFlagDefinition {
 
@@ -74,45 +76,21 @@ public class FlagDef_AllowPvP extends PlayerMovementFlagDefinition {
 
 
     @Override
-    public void onChangeClaim(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo) {
-        if (lastLocation == null) return;
-        Flag flag = this.getFlagInstanceAtLocation(to, player);
-        WorldSettings settings = this.settingsManager.get(player.getWorld());
-        if (flag == null) {
-            if (this.getFlagInstanceAtLocation(lastLocation, player) != null) {
-                if (!settings.pvpRequiresClaimFlag) return;
-                if (!settings.pvpExitClaimMessageEnabled) return;
-                MessagingUtil.sendMessage(player, TextMode.Success + settings.pvpExitClaimMessage);
-            }
-            return;
-        }
-        if (flag == this.getFlagInstanceAtLocation(lastLocation, player)) return;
-        if (this.getFlagInstanceAtLocation(lastLocation, player) != null) return;
-
-        if (!settings.pvpRequiresClaimFlag) return;
-        if (!settings.pvpEnterClaimMessageEnabled) return;
-
-        MessagingUtil.sendMessage(player, TextMode.Warn + settings.pvpEnterClaimMessage);
-    }
-
-    // bandaid
-    private boolean hasJoined;
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onJoin(PlayerJoinEvent e) {
-        Player player = e.getPlayer();
-        if (hasJoined) {
-            hasJoined = false;
-            return;
-        }
-        hasJoined = true;
-        Flag flag = this.getFlagInstanceAtLocation(player.getLocation(), null);
-        if (flag == null) return;
+    public void onChangeClaim(@NotNull Player player, Location lastLocation, @NotNull Location to, Claim claimFrom, Claim claimTo, @Nullable Flag flagFrom, @Nullable Flag flagTo) {
+        // Check if we need to send a message
         WorldSettings settings = this.settingsManager.get(player.getWorld());
         if (!settings.pvpRequiresClaimFlag) return;
         if (!settings.pvpEnterClaimMessageEnabled) return;
-        MessagingUtil.sendMessage(player, TextMode.Warn + settings.pvpEnterClaimMessage);
 
+        // Entering a PVP zone
+        if (flagTo != null && flagFrom == null) {
+            MessagingUtil.sendMessage(player, TextMode.Warn + settings.pvpEnterClaimMessage);
+            return;
+        }
+        // Leaving a PVP zone
+        if (flagTo == null && flagFrom != null) {
+            MessagingUtil.sendMessage(player, TextMode.Success + settings.pvpExitClaimMessage);
+        }
     }
 
     /***

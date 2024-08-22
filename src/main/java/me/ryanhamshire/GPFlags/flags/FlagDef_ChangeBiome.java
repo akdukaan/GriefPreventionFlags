@@ -164,7 +164,10 @@ public class FlagDef_ChangeBiome extends FlagDefinition {
 
     @EventHandler
     public void onClaimDelete(ClaimDeletedEvent e) {
-        if (e.getClaim().parent != null) return; //don't restore a sub-claim
+        if (e.getClaim().parent != null) {
+            // todo here is where we'd get the parent's flag and set the inner biome to that
+            return;
+        }
         Claim claim = e.getClaim();
         FlagManager fm = GPFlags.getInstance().getFlagManager();
         if (fm.getEffectiveFlag(claim.getLesserBoundaryCorner(), this.getName(), claim) == null) return;

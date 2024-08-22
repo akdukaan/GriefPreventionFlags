@@ -34,7 +34,7 @@ public class CommandBuyAccessTrust implements CommandExecutor {
                 if (claim.getPermission(player.getUniqueId().toString()) == ClaimPermission.Access ||
                         claim.getPermission(player.getUniqueId().toString()) == ClaimPermission.Build ||
                         claim.getPermission(player.getUniqueId().toString()) == ClaimPermission.Inventory ||
-                        player.getUniqueId().equals(claim.getOwnerID())
+                        player.getUniqueId().equals(claim.ownerID)
                 ) {
                     MessagingUtil.sendMessage(sender, TextMode.Err, Messages.AlreadyHaveTrust);
                     return true;
@@ -54,8 +54,8 @@ public class CommandBuyAccessTrust implements CommandExecutor {
                     MessagingUtil.sendMessage(sender, TextMode.Err, Messages.NotEnoughMoney);
                     return true;
                 }
-                if (claim.getOwnerID() != null) {
-                    VaultHook.giveMoney(claim.getOwnerID(), cost);
+                if (claim.ownerID != null) {
+                    VaultHook.giveMoney(claim.ownerID, cost);
                 }
                 claim.setPermission(player.getUniqueId().toString(), ClaimPermission.Access);
                 GriefPrevention.instance.dataStore.saveClaim(claim);
