@@ -289,14 +289,14 @@ public class Util {
 
     public static boolean isClaimOwner(Claim c, Player p) {
         if (c == null) return false;
-        if (c.getOwnerID() == null) return false;
-        return c.getOwnerID().equals(p.getUniqueId());
+        if (c.ownerID == null) return false;
+        return c.ownerID.equals(p.getUniqueId());
     }
 
     public static boolean shouldBypass(@NotNull Player p, @Nullable Claim c, @NotNull String basePerm) {
         if (p.hasPermission(basePerm)) return true;
         if (c == null) return p.hasPermission(basePerm + ".nonclaim");
-        if (c.getOwnerID() == null && p.hasPermission(basePerm + ".adminclaim")) return true;
+        if (c.ownerID == null && p.hasPermission(basePerm + ".adminclaim")) return true;
         if (isClaimOwner(c, p) && p.hasPermission(basePerm + ".ownclaim")) return true;
         if (canManage(c, p) && p.hasPermission(basePerm + ".manage")) return true;
         if (canBuild(c, p) && (p.hasPermission(basePerm + ".build") || p.hasPermission(basePerm + ".edit"))) return true;
@@ -347,7 +347,7 @@ public class Util {
 
     private static ArrayList<ItemStack> getDrops(Vehicle vehicle) {
         ArrayList<ItemStack> drops = new ArrayList<>();
-        if (vehicle.isValid()) return drops;
+        if (!vehicle.isValid()) return drops;
 
         if (vehicle instanceof Boat) {
             Boat boat = (Boat) vehicle;
@@ -366,7 +366,9 @@ public class Util {
     }
 
     public static void breakVehicle(Vehicle vehicle, Location location) {
-        if (!vehicle.isValid()) return;
+        if (!vehicle.isValid()) {
+            return;
+        }
         ArrayList<ItemStack> drops = getDrops(vehicle);
         World world = vehicle.getWorld();
         vehicle.eject();

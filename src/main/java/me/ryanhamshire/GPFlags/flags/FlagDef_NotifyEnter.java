@@ -34,7 +34,7 @@ public class FlagDef_NotifyEnter extends PlayerMovementFlagDefinition {
 
     public boolean shouldNotify(@NotNull Player p, @Nullable Claim c) {
         if (c == null) return false;
-        UUID ownerID = c.getOwnerID();
+        UUID ownerID = c.ownerID;
         if (ownerID == null) return false;
         Player owner = Bukkit.getPlayer(ownerID);
         if (owner == null) return false;
@@ -46,7 +46,7 @@ public class FlagDef_NotifyEnter extends PlayerMovementFlagDefinition {
     }
 
     public void notifyEntry(@NotNull Flag flag, @NotNull Claim claim, @NotNull Player player) {
-        Player owner = Bukkit.getPlayer(claim.getOwnerID());
+        Player owner = Bukkit.getPlayer(claim.ownerID);
         if (owner == null) return;
         if (owner.getName().equals(player.getName())) return;
         String param = flag.parameters;

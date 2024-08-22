@@ -65,7 +65,7 @@ public class FlagDef_BuyAccessTrust extends PlayerMovementFlagDefinition {
         if (claimTo.getPermission(player.getUniqueId().toString()) == ClaimPermission.Access) return;
         if (claimTo.getPermission(player.getUniqueId().toString()) == ClaimPermission.Build) return;
         if (claimTo.getPermission(player.getUniqueId().toString()) == ClaimPermission.Inventory) return;
-        if (player.getUniqueId().equals(claimTo.getOwnerID())) return;
+        if (player.getUniqueId().equals(claimTo.ownerID)) return;
         MessagingUtil.sendMessage(player, TextMode.Info, Messages.AccessTrustPrice, flagTo.parameters);
     }
 

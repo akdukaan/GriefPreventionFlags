@@ -64,7 +64,7 @@ public class FlagDef_BuyContainerTrust extends PlayerMovementFlagDefinition {
 
         if (claimTo.getPermission(player.getUniqueId().toString()) == ClaimPermission.Inventory) return;
         if (claimTo.getPermission(player.getUniqueId().toString()) == ClaimPermission.Build) return;
-        if (player.getUniqueId().equals(claimTo.getOwnerID())) return;
+        if (player.getUniqueId().equals(claimTo.ownerID)) return;
         MessagingUtil.sendMessage(player, TextMode.Info, Messages.ContainerTrustPrice, flagTo.parameters);
     }
 

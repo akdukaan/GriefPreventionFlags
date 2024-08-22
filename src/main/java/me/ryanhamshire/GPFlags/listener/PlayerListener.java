@@ -36,7 +36,7 @@ public class PlayerListener implements Listener {
         Location locTo = event.getTo();
         Location locFrom = event.getFrom();
         Player player = event.getPlayer();
-        if (flagsPreventMovement(locTo, locFrom, player, null)) {
+        if (flagsPreventMovement(locTo, locFrom, player)) {
             event.setCancelled(true);
         }
     }
@@ -65,6 +65,7 @@ public class PlayerListener implements Listener {
                 riders.add(player);
             }
         }
+        if (riders.isEmpty()) return;
 
         // If denied by noenter flag, break the vehicle
         if (flagsPreventMovement(locTo, locFrom, riders.toArray(new Player[0]))) {
@@ -149,6 +150,7 @@ public class PlayerListener implements Listener {
         // Now that we know everyone is allowed entry, lets call postclaimbordervent
         for (PlayerPreClaimBorderEvent event : events) {
             Bukkit.getPluginManager().callEvent(new PlayerPostClaimBorderEvent(event));
+            System.out.println("PostBorder called");
         }
         return false;
     }
