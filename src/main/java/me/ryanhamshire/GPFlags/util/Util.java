@@ -378,4 +378,43 @@ public class Util {
         }
     }
 
+    /**
+     * Get the list of Players who move with this player
+     * @param entity
+     * @return
+     */
+    public static Set<Player> getMovementGroup(Entity entity) {
+        Set<Player> group = new HashSet<>();
+
+        // Add the entity if it's a person
+        if (entity instanceof Player) {
+            Player player = (Player) entity;
+            group.add(player);
+        }
+
+        // Add everyone riding the entity
+        List<Entity> passengers = entity.getPassengers();
+        for (Entity passenger : passengers) {
+            if (passenger instanceof Player) {
+                Player person = ((Player) passenger);
+                group.add(person);
+            }
+        }
+
+        // Get all passengers riding the same vehicle as entity
+        Entity mount = entity.getVehicle();
+        if (mount instanceof Vehicle) {
+            Vehicle vehicle = (Vehicle) mount;
+            passengers = vehicle.getPassengers();
+            for (Entity passenger : passengers) {
+                if (passenger instanceof Player) {
+                    Player person = ((Player) passenger);
+                    group.add(person);
+                }
+            }
+        }
+
+        return group;
+    }
+
 }
