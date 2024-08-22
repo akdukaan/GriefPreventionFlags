@@ -230,6 +230,46 @@ public class FlagManager {
     }
 
     /**
+     *
+     * @param flagname
+     * @param claim
+     * @param world World to be checked if claim is null
+     * @return
+     */
+    public @Nullable Flag getEffectiveFlag(@NotNull String flagname, @Nullable Claim claim, @NotNull World world) {
+        flagname = flagname.toLowerCase();
+        Flag flag;
+        if (claim != null && GriefPrevention.instance.claimsEnabledForWorld(world)) {
+            flag = getRawClaimFlag(claim, flagname);
+            if (flag != null) {
+                if (flag.getSet()) return flag;
+                return null;
+            }
+            Claim parent = claim.parent;
+            if (parent != null) {
+                flag = getRawClaimFlag(parent, flagname);
+                if (flag != null) {
+                    if (flag.getSet()) return flag;
+                    return null;
+                }
+            }
+            flag = getRawDefaultFlag(flagname);
+            if (flag != null) {
+                if (flag.getSet()) return flag;
+                return null;
+            }
+        }
+
+        flag = getRawWorldFlag(world, flagname);
+        if (flag != null && flag.getSet()) return flag;
+
+        flag = getRawServerFlag(flagname);
+        if (flag != null && flag.getSet()) return flag;
+
+        return null;
+    }
+
+    /**
      * Get all flags in a claim
      *
      * @param claim Claim to get flags from

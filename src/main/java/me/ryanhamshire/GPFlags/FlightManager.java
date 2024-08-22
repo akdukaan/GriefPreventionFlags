@@ -7,7 +7,6 @@ import me.ryanhamshire.GPFlags.util.Util;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
-import me.ryanhamshire.GriefPrevention.events.ClaimDeletedEvent;
 import me.ryanhamshire.GriefPrevention.events.ClaimTransferEvent;
 import me.ryanhamshire.GriefPrevention.events.TrustChangedEvent;
 import org.bukkit.Bukkit;
@@ -20,8 +19,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -90,7 +87,7 @@ public class FlightManager implements Listener {
     }
 
     /**
-     * Runs a manage flight operation between the oldLocation and the location that the player will be in ticks ticks
+     * Runs a manage flight operation between the oldLocation now and the location that the player will be in ticks ticks
      * @param player
      * @param ticks Number of ticks to wait before calculating new flight allow status and managing flight.
      * @param oldLocation If provided, will be able to avoid running a manage flight operation if the new status after ticks ticks is the same

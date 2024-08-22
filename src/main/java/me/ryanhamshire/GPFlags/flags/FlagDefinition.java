@@ -11,6 +11,7 @@ import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -59,7 +60,6 @@ public abstract class FlagDefinition implements Listener {
 
     /**
      * Get an instance of a flag at a location
-     *
      * @param location Location for checking for flag
      * @param player Player for checking cached claims
      * @return Logical instance of flag at location
@@ -70,6 +70,15 @@ public abstract class FlagDefinition implements Listener {
             cachedClaim = playerData.lastClaim;
         }
         return flagManager.getEffectiveFlag(location, this.getName(), cachedClaim);
+    }
+
+    public Flag getEffectiveFlag(@Nullable Claim claim, @NotNull World world) {
+        return flagManager.getEffectiveFlag(this.getName(), claim, world);
+    }
+
+    public Flag getEffectiveFlag(@Nullable Claim claim, @Nullable Location location) {
+        if (location == null) return null;
+        return flagManager.getEffectiveFlag(this.getName(), claim, location.getWorld());
     }
 
     public void incrementInstances() {

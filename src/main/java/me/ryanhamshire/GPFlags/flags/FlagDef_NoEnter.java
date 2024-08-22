@@ -10,12 +10,11 @@ import me.ryanhamshire.GPFlags.util.MessagingUtil;
 import me.ryanhamshire.GPFlags.util.Util;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
-import me.ryanhamshire.GriefPrevention.PlayerData;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class FlagDef_NoEnter extends PlayerMovementFlagDefinition {
 
@@ -40,24 +39,20 @@ public class FlagDef_NoEnter extends PlayerMovementFlagDefinition {
     public boolean allowMovement(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo) {
         if (player.hasPermission("gpflags.bypass.noenter")) return true;
 
-        Flag flag = this.getFlagInstanceAtLocation(to, player);
+        Flag flag = getEffectiveFlag(claimTo, to);
         if (flag == null) return true;
 
-        Claim claim = GriefPrevention.instance.dataStore.getClaimAt(to, false, claimTo);
-        if (Util.canAccess(claim, player)) return true;
+        if (Util.canAccess(claimTo, player)) return true;
 
         MessagingUtil.sendMessage(player, TextMode.Err, Messages.NoEnterMessage);
         return false;
     }
 
-    @EventHandler
-    public void onJoin(PlayerJoinEvent e) {
-        Player player = e.getPlayer();
-        Flag flag = this.getFlagInstanceAtLocation(player.getLocation(), player);
-        if (flag == null) return;
-        PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId());
-        Claim claim = GriefPrevention.instance.dataStore.getClaimAt(player.getLocation(), false, playerData.lastClaim);
-        if (Util.canAccess(claim, player)) return;
+    @Override
+    public void onChangeClaim(@NotNull Player player, @Nullable Location from, @NotNull Location to, @Nullable Claim claimFrom, @Nullable Claim claimTo, @Nullable Flag flagFrom, @Nullable Flag flagTo) {
+        if (flagTo == null) return;
+        if (Util.canAccess(claimTo, player)) return;
+
         MessagingUtil.sendMessage(player, TextMode.Err, Messages.NoEnterMessage);
         GriefPrevention.instance.ejectPlayer(player);
     }

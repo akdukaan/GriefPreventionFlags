@@ -23,33 +23,16 @@ public class FlagDef_PlayerTime extends PlayerMovementFlagDefinition implements 
         super(manager, plugin);
     }
 
-    @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent event) {
-        Player player = event.getPlayer();
-        Location respawnLoc = player.getRespawnLocation();
-        Location deathLoc = player.getLocation();
-        handleTime(player, deathLoc, respawnLoc);
-    }
-
     @Override
-    public void onChangeClaim(Player player, Location from, Location to, Claim claimFrom, Claim claimTo) {
-        handleTime(player, from, to);
-    }
-
-    public void handleTime(Player player, @Nullable Location from, Location to) {
-        // Check if time flag changed
-        if (from == null) return;
-        Flag flagFrom = this.getFlagInstanceAtLocation(from, player);
-        Flag flagTo = this.getFlagInstanceAtLocation(to, player);
-        if (flagTo == flagFrom) return;
-
+    public void onChangeClaim(Player player, Location from, Location to, Claim claimFrom, Claim claimTo, @Nullable Flag flagFrom, @Nullable Flag flagTo) {
         // Reset the time if moving from enabled to disabled
-        if (flagTo == null) {
+        if (flagTo == null && flagFrom != null) {
             player.resetPlayerTime();
             return;
         }
 
-        // Set time to new flag
+        // Set time to new flag if exists
+        if (flagTo == null) return;
         setPlayerTime(player, flagTo);
     }
 
@@ -64,16 +47,6 @@ public class FlagDef_PlayerTime extends PlayerMovementFlagDefinition implements 
         } else if (time.equalsIgnoreCase("midnight")) {
             player.setPlayerTime(18000, false);
         }
-    }
-
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        Flag flag = this.getFlagInstanceAtLocation(player.getLocation(), player);
-        if (flag == null) return;
-
-        // Set time to new flag
-        setPlayerTime(player, flag);
     }
 
     @Override

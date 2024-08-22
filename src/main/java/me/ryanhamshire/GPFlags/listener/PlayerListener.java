@@ -15,10 +15,7 @@ import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.jetbrains.annotations.NotNull;
@@ -94,13 +91,13 @@ public class PlayerListener implements Listener {
         Claim claim = event.getClaim();
         for (Player player : Util.getPlayersIn(claim)) {
             Location location = player.getLocation();
-            PlayerPostClaimBorderEvent borderEvent = new PlayerPostClaimBorderEvent(player, claim, null, location, location);
+            PlayerPostClaimBorderEvent borderEvent = new PlayerPostClaimBorderEvent(player, claim, claim.parent, location, location);
             Bukkit.getPluginManager().callEvent(borderEvent);
         }
     }
 
     @EventHandler
-    private void onLogin(PlayerLoginEvent event) {
+    private void onLogin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         Location spawn = player.getLocation();
         Claim cachedClaim = dataStore.getPlayerData(player.getUniqueId()).lastClaim;
@@ -124,8 +121,8 @@ public class PlayerListener implements Listener {
      * If the event was allowed, will call PostClaimBorderEvent
      * @param locTo
      * @param locFrom
-     * @param player
-     * @return If the movement was allowed
+     * @param players
+     * @return If the movement was prevented
      */
     public static boolean flagsPreventMovement(Location locTo, Location locFrom, Player... players) {
         if (locTo.getBlockX() == locFrom.getBlockX() && locTo.getBlockY() == locFrom.getBlockY() && locTo.getBlockZ() == locFrom.getBlockZ()) {
@@ -156,4 +153,5 @@ public class PlayerListener implements Listener {
         return false;
     }
 
+    // todo I'll need to check every onChangeClaim and allowmovement making sure theyre not being weird if from is null
 }

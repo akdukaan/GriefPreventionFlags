@@ -1,5 +1,6 @@
 package me.ryanhamshire.GPFlags.flags;
 
+import me.ryanhamshire.GPFlags.Flag;
 import me.ryanhamshire.GPFlags.FlagManager;
 import me.ryanhamshire.GPFlags.GPFlags;
 import me.ryanhamshire.GPFlags.event.PlayerPostClaimBorderEvent;
@@ -56,18 +57,22 @@ public abstract class PlayerMovementFlagDefinition extends FlagDefinition {
 
     @EventHandler
     public void onPostMove(PlayerPostClaimBorderEvent event) {
-        onChangeClaim(event.getPlayer(), event.getLocFrom(), event.getLocTo(), event.getClaimFrom(), event.getClaimTo());
+        Flag fromFlag = getEffectiveFlag(event.getClaimFrom(), event.getLocFrom());
+        Flag toFlag = getEffectiveFlag(event.getClaimTo(), event.getLocTo());
+        if (fromFlag == toFlag) return;
+        onChangeClaim(event.getPlayer(), event.getLocFrom(), event.getLocTo(), event.getClaimFrom(), event.getClaimTo(), fromFlag, toFlag);
     }
 
     /**
      * Called after a player has successfully moved from one region to another.
+     * Not called if the flags are the same due to like subclaims
      * @param player
-     * @param from A bound-adjusted location
+     * @param from A bound-adjusted location or null if a login event
      * @param to A bound-adjusted location
-     * @param claimFrom The claim that the player is coming from
-     * @param claimTo The claim that the player is now in
+     * @param claimFrom The claim that the player is coming from if one exists
+     * @param claimTo The claim that the player is now in if one exists
      */
-    public void onChangeClaim(@NotNull Player player, @Nullable Location from, @NotNull Location to, @Nullable Claim claimFrom, @Nullable Claim claimTo) {}
+    public void onChangeClaim(@NotNull Player player, @Nullable Location from, @NotNull Location to, @Nullable Claim claimFrom, @Nullable Claim claimTo, @Nullable Flag fromFlag, @Nullable Flag toFlag) {}
 
     @Override
     public List<FlagType> getFlagType() {

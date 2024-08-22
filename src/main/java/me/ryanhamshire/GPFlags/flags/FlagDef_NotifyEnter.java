@@ -24,12 +24,12 @@ public class FlagDef_NotifyEnter extends PlayerMovementFlagDefinition {
     }
 
     @Override
-    public void onChangeClaim(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo) {
-        if (claimTo == null) return;
-        Flag flag = GPFlags.getInstance().getFlagManager().getEffectiveFlag(to, this.getName(), claimTo);
-        if (flag == null) return;
+    public void onChangeClaim(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo, @Nullable Flag flagFrom, @Nullable Flag flagTo) {
+        if (flagTo == null) return;
 
-        if (shouldNotify(player, claimTo)) notifyEntry(flag, claimTo, player);
+        if (shouldNotify(player, claimTo)) {
+            notifyEntry(flagTo, claimTo, player);
+        }
     }
 
     public boolean shouldNotify(@NotNull Player p, @Nullable Claim c) {
@@ -55,19 +55,6 @@ public class FlagDef_NotifyEnter extends PlayerMovementFlagDefinition {
         }
         MessagingUtil.sendMessage(owner, TextMode.Info, Messages.NotifyEnter, player.getName(), param);
 
-    }
-
-    @EventHandler
-    public void onJoin(PlayerJoinEvent e) {
-        Player player = e.getPlayer();
-        Location location = player.getLocation();
-        PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId());
-        Claim claim = GriefPrevention.instance.dataStore.getClaimAt(location, false, playerData.lastClaim);
-        if (claim == null) return;
-        Flag flag = GPFlags.getInstance().getFlagManager().getEffectiveFlag(location, this.getName(), claim);
-        if (flag == null) return;
-
-        if (shouldNotify(player, claim)) notifyEntry(flag, claim, player);
     }
 
     @Override
