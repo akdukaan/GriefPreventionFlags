@@ -53,6 +53,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     private void onMount(VehicleEnterEvent event) {
+        if (event.isCancelled()) return;
         Entity entity = event.getEntered();
         Vehicle vehicle = event.getVehicle();
         if (entity instanceof Player) {
@@ -131,7 +132,6 @@ public class PlayerListener implements Listener {
         // Now that we know everyone is allowed entry, lets call postclaimborderevent
         for (PlayerPreClaimBorderEvent event : events) {
             Bukkit.getPluginManager().callEvent(new PlayerPostClaimBorderEvent(event));
-            System.out.println("PostBorder called");
         }
         return false;
     }

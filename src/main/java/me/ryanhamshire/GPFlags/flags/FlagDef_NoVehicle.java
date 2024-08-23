@@ -13,6 +13,7 @@ import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import org.bukkit.Location;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.jetbrains.annotations.NotNull;
@@ -60,7 +61,8 @@ public class FlagDef_NoVehicle extends PlayerMovementFlagDefinition {
 
     }
 
-    @EventHandler
+    // Low priority so that PlayerPreClaimBorderEvent is only made if this doesn't cancel the event
+    @EventHandler(priority = EventPriority.LOW)
     private void onMount(VehicleEnterEvent event) {
         Entity entity = event.getEntered();
         Vehicle vehicle = event.getVehicle();

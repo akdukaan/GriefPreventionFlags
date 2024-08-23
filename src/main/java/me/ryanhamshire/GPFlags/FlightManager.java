@@ -72,7 +72,6 @@ public class FlightManager implements Listener {
 
     @EventHandler
     public void onEnterNewClaim(PlayerPostClaimBorderEvent event) {
-        System.out.println("FlightManager was listening");
         manageFlightLater(event.getPlayer(), 1, event.getLocFrom());
     }
 
@@ -95,22 +94,17 @@ public class FlightManager implements Listener {
      */
     public static void manageFlightLater(@NotNull Player player, int ticks, @Nullable Location oldLocation) {
         if (oldLocation == null) {
-            System.out.println("old was null bad");
             Bukkit.getScheduler().runTaskLater(GPFlags.getInstance(), () -> {
                 managePlayerFlight(player, null, player.getLocation());
             }, ticks);
-            System.out.println("Old location null bad");
             return;
         }
-        System.out.println("Not null old good");
         // if oldLocation is passed in, we want to calculate that value immediately
         PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId());
         Boolean oldFlightAllowedStatus = gpfAllowsFlight(player, oldLocation, playerData.lastClaim);
         Bukkit.getScheduler().runTaskLater(GPFlags.getInstance(), () -> {
             Boolean newFlightAllowedStatus = gpfAllowsFlight(player, player.getLocation(), playerData.lastClaim);
             managePlayerFlight(player, oldFlightAllowedStatus, newFlightAllowedStatus);
-            System.out.println("old statys was " + oldFlightAllowedStatus);
-            System.out.println("new status was " + newFlightAllowedStatus);
         }, ticks);
     }
 
