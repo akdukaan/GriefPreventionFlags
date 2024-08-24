@@ -6,7 +6,6 @@ import me.ryanhamshire.GPFlags.Messages;
 import me.ryanhamshire.GPFlags.hooks.PlaceholderApiHook;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
@@ -52,7 +51,7 @@ public class MessagingUtil {
             message = PlaceholderApiHook.addPlaceholders(player, message);
         } catch (Throwable ignored) {}
         message = message.replace(COLOR_CHAR, '&');
-        Component component = MiniMessage.miniMessage().deserialize(message);
+        Component component = ChatUtil.validatedHexComp(receiver, message);
         GPFlags.getInstance().getAdventure().player(player).sendMessage(component);
 //        Audience.audience(player).sendMessage(component);
     }
@@ -64,7 +63,7 @@ public class MessagingUtil {
 
     public static void sendActionbar(Player player, String message) {
         message = message.replace(COLOR_CHAR, '&');
-        Component component = MiniMessage.miniMessage().deserialize(message);
+        Component component = ChatUtil.hexComp(message);
         GPFlags.getInstance().getAdventure().player(player).sendActionBar(component);
     }
 
@@ -94,7 +93,7 @@ public class MessagingUtil {
 
     public static String reserialize(String ampersandMessage) {
         ampersandMessage = convertOriginalHexColors(ampersandMessage);
-        Component component = LegacyComponentSerializer.legacyAmpersand().deserialize(ampersandMessage);
+        Component component = ChatUtil.hexComp(ampersandMessage);
         return MiniMessage.miniMessage().serialize(component);
     }
 }
