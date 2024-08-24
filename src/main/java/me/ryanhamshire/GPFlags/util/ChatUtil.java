@@ -3,11 +3,8 @@ package me.ryanhamshire.GPFlags.util;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -151,9 +148,27 @@ public class ChatUtil {
 
     private static String validateMinimessage(CommandSender sender, String message) {
 
-        // Check for click-components
-        Pattern pattern = Pattern.compile("<click:.*?>");
+        // Check if there is a link in the message without click-component
+        Pattern pattern = Pattern.compile("https?://\\S+");
         Matcher matcher = pattern.matcher(message);
+        while (matcher.find()) {
+            boolean requiredChanges = false;
+            if(!sender.hasPermission("gpflags.messages.links")) {
+                message = message.replace(matcher.group(), "");
+                requiredChanges = true;
+            } else {
+                String link = message.substring(matcher.start(), matcher.end());
+                message = message.replace(link, "<click:open_url:" + link + ">" + link + "</click>");
+                matcher = pattern.matcher(message);
+            }
+            if (!requiredChanges) {
+                break;
+            }
+        }
+
+        // Check for click-components
+        pattern = Pattern.compile("<click:.*?>");
+        matcher = pattern.matcher(message);
         while (matcher.find()) {
             boolean requiredChanges = false;
             String clickComponent = message.substring(matcher.start(), matcher.end());
@@ -209,7 +224,7 @@ public class ChatUtil {
         while (matcher.find()) {
             boolean requiredChanges = false;
             String hexComponent = message.substring(matcher.start(), matcher.end());
-            if(!sender.hasPermission("gpflags.messages.hex-colors")) {
+            if (!sender.hasPermission("gpflags.messages.hex-colors")) {
                 message = message.replace(hexComponent, "<color:white>");
                 requiredChanges = true;
             }
@@ -227,7 +242,7 @@ public class ChatUtil {
         while (matcher.find()) {
             boolean requiredChanges = false;
             String colorComponent = message.substring(matcher.start(), matcher.end());
-            if(!sender.hasPermission("gpflags.messages.colors")) {
+            if (!sender.hasPermission("gpflags.messages.colors")) {
                 message = message.replace(colorComponent, "");
                 requiredChanges = true;
             }
