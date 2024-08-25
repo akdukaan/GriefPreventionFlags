@@ -2,7 +2,6 @@ package me.ryanhamshire.GPFlags.util;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.regex.Matcher;
@@ -11,41 +10,24 @@ import java.util.regex.Pattern;
 public class ChatUtil {
     private static final MiniMessage minimessage = MiniMessage.builder().build();
 
-    @SuppressWarnings("all")
-    public static String hexString(String message) {
-        Pattern pattern = Pattern.compile("&#[a-fA-F0-9]{6}");
-        Matcher matcher = pattern.matcher(message);
-        while (matcher.find()) {
-            String hexCode = message.substring(matcher.start(), matcher.end());
-            String replaceSharp = hexCode.replace("&", "").replace('#', 'x');
-
-            char[] ch = replaceSharp.toCharArray();
-            StringBuilder builder = new StringBuilder();
-            for (char c : ch) {
-                builder.append("&" + c);
-            }
-
-            message = message.replace(hexCode, builder.toString());
-            matcher = pattern.matcher(message);
-        }
-        return ChatColor.translateAlternateColorCodes('&', message);
-    }
-
+    // Used to format chat-messages (legacy-support) of a specific sender related to his permissions
     public static Component validatedHexComp(CommandSender sender, String message) {
         message = message.replace("§", "&");
         message = parseHexColorCodes(message);
-        message = parseNativeColorCodes(message);
+        message = parseEasyToComplex(message);
         message = validateMinimessage(sender, message);
         return minimessage.deserialize(message);
     }
 
+    // Used to format a chat-messages (legacy-support) without previous validation of somebody.
     public static Component hexComp(String message) {
         message = message.replace("§", "&");
         message = parseHexColorCodes(message);
-        message = parseNativeColorCodes(message);
+        message = parseEasyToComplex(message);
         return minimessage.deserialize(message);
     }
 
+    // Parses legacy hex-colors to MiniMessage hex-colors
     private static String parseHexColorCodes(String message) {
         Pattern pattern = Pattern.compile("&#[a-fA-F0-9]{6}");
         Matcher matcher = pattern.matcher(message);
@@ -59,6 +41,7 @@ public class ChatUtil {
         return message;
     }
 
+    // Parses legacy native-colors to MiniMessage native-colors
     private static String parseNativeColorCodes(String message) {
         Pattern pattern = Pattern.compile("&[a-flmnokrA-F0-9]");
         Matcher matcher = pattern.matcher(message);
@@ -72,68 +55,119 @@ public class ChatUtil {
         return message;
     }
 
-    public static Component fixColor(String message, String key, String value) {
-        if (message.split(key).length == 0)
-            return ChatUtil.hexComp(value);
-
-        String colorMsg = message.split(key)[0];
-        String color = colorMsg.substring(colorMsg.length() - 2);
-        if (color.trim().isEmpty())
-            return ChatUtil.hexComp(value);
-        if (color.charAt(0) == '&')
-            return ChatUtil.hexComp(color + value);
-        else return ChatUtil.hexComp(value);
+    private static String parseEasyToComplex(String message) {
+        message = message.replace("&0", "<color:black>");
+        message = message.replace("&1", "<color:dark_blue>");
+        message = message.replace("&2", "<color:dark_green>");
+        message = message.replace("&3", "<color:dark_aqua>");
+        message = message.replace("&4", "<color:dark_red>");
+        message = message.replace("&5", "<color:dark_purple>");
+        message = message.replace("&6", "<color:gold>");
+        message = message.replace("&7", "<color:gray>");
+        message = message.replace("&8", "<color:dark_gray>");
+        message = message.replace("&9", "<color:blue>");
+        message = message.replace("&a", "<color:green>");
+        message = message.replace("&b", "<color:aqua>");
+        message = message.replace("&c", "<color:red>");
+        message = message.replace("&d", "<color:light_purple>");
+        message = message.replace("&e", "<color:yellow>");
+        message = message.replace("&f", "<color:white>");
+        message = message.replace("&l", "<bold>");
+        message = message.replace("&m", "<strikethrough>");
+        message = message.replace("&n", "<u>");
+        message = message.replace("&o", "<italic>");
+        message = message.replace("&k", "<obf>");
+        message = message.replace("&r", "<reset>");
+        message = message.replace("<red>", "<color:red>");
+        message = message.replace("<green>", "<color:green>");
+        message = message.replace("<blue>", "<color:blue>");
+        message = message.replace("<yellow>", "<color:yellow>");
+        message = message.replace("<aqua>", "<color:aqua>");
+        message = message.replace("<gold>", "<color:gold>");
+        message = message.replace("<gray>", "<color:gray>");
+        message = message.replace("<dark_gray>", "<color:dark_gray>");
+        message = message.replace("<dark_red>", "<color:dark_red>");
+        message = message.replace("<dark_green>", "<color:dark_green>");
+        message = message.replace("<dark_blue>", "<color:dark_blue>");
+        message = message.replace("<dark_aqua>", "<color:dark_aqua>");
+        message = message.replace("<dark_purple>", "<color:dark_purple>");
+        message = message.replace("<light_purple>", "<color:light_purple>");
+        message = message.replace("<black>", "<color:black>");
+        message = message.replace("<white>", "<color:white>");
+        return message;
     }
 
+    // Returns the MiniMessage color-code for a specific native-color. It also resets the color when the char is 'r'
     private static String getNativeColor(char color) {
-        String reset = "<!b><!i><!obf><!u><!st>";
+        String reset = "<reset>";
         String colorCode = "<color:white>";
         if (color == 'r') return reset + colorCode;
         switch (color) {
             case 'a':
                 colorCode = "<color:green>";
+                break;
             case 'b':
                 colorCode = "<color:aqua>";
+                break;
             case 'c':
                 colorCode = "<color:red>";
+                break;
             case 'd':
                 colorCode = "<color:light_purple>";
+                break;
             case 'e':
                 colorCode = "<color:yellow>";
+                break;
             case 'f':
                 colorCode = "<color:white>";
+                break;
             case '0':
                 colorCode = "<color:black>";
+                break;
             case '1':
                 colorCode = "<color:dark_blue>";
+                break;
             case '2':
                 colorCode = "<color:dark_green>";
+                break;
             case '3':
                 colorCode = "<color:dark_aqua>";
+                break;
             case '4':
                 colorCode = "<color:dark_red>";
+                break;
             case '5':
                 colorCode = "<color:dark_purple>";
+                break;
             case '6':
                 colorCode = "<color:gold>";
+                break;
             case '7':
                 colorCode = "<color:gray>";
+                break;
             case '8':
                 colorCode = "<color:dark_gray>";
+                break;
             case '9':
                 colorCode = "<color:blue>";
+                break;
             case 'l':
                 colorCode = "<bold>";
+                break;
             case 'm':
                 colorCode = "<strikethrough>";
+                break;
             case 'n':
                 colorCode = "<u>";
+                break;
             case 'o':
                 colorCode = "<italic>";
+                break;
             case 'k':
                 colorCode = "<obf>";
+                break;
         }
-        switch (color) {
+        /*switch (color) {
             case 'l':
             case 'm':
             case 'n':
@@ -142,13 +176,23 @@ public class ChatUtil {
                 break;
             default:
                 colorCode = reset + colorCode;
-        }
+        }*/
         return colorCode;
     }
 
+    // Validates a minimessage for a specific sender, meaning we check for permissions and remove components if necessary
     private static String validateMinimessage(CommandSender sender, String message) {
 
+        /*
         // Check if there is a link in the message without click-component
+        Pattern pattern = Pattern.compile("(?<!<click:open_url:)(https?://\\S+)(?!>)");
+        Matcher matcher = pattern.matcher(message);
+        while (matcher.find()) {
+            String link = message.substring(matcher.start(), matcher.end());
+            message = message.replace(link, "<click:open_url:" + link + ">" + link + "</click>");
+            matcher = pattern.matcher(message);
+        }*/
+
         Pattern pattern = Pattern.compile("https?://\\S+");
         Matcher matcher = pattern.matcher(message);
         while (matcher.find()) {
@@ -252,7 +296,6 @@ public class ChatUtil {
                 break;
             }
         }
-
         return message;
     }
 }
