@@ -15,8 +15,8 @@ public class ChatUtil {
     public static String validatedHexString(CommandSender sender, String message) {
         message = message.replace("§", "&");
         message = parseHexColorCodes(message);
-        message = parseEasyToComplex(message);
-        if(sender == null) return message;
+        message = normalizeColorCodes(message);
+        if (sender == null) return message;
         message = validateMinimessage(sender, message);
         return message;
     }
@@ -25,7 +25,7 @@ public class ChatUtil {
     public static Component hexComp(String message) {
         message = message.replace("§", "&");
         message = parseHexColorCodes(message);
-        message = parseEasyToComplex(message);
+        message = normalizeColorCodes(message);
         return minimessage.deserialize(message);
     }
 
@@ -43,7 +43,8 @@ public class ChatUtil {
         return message;
     }
 
-    private static String parseEasyToComplex(String message) {
+    // Normalized legacy color-codes and shortened Minimessage color-codes to written out MiniMessage color-codes
+    private static String normalizeColorCodes(String message) {
         message = message.replace("&0", "<color:black>");
         message = message.replace("&1", "<color:dark_blue>");
         message = message.replace("&2", "<color:dark_green>");
@@ -103,21 +104,17 @@ public class ChatUtil {
             matcher = pattern.matcher(message);
         }*/
 
-        Pattern pattern = Pattern.compile("https?://\\S+");
+        // Check if there are links
+        Pattern pattern = Pattern.compile("https?://(?:www\\.)?[\\w\\-.]+\\.[a-z]{2,}(?:/[\\w\\-.,@?^=%&:/~+#]*)?");
         Matcher matcher = pattern.matcher(message);
+
+        String pseudoMessage = message;
         while (matcher.find()) {
-            boolean requiredChanges = false;
-            if(!sender.hasPermission("gpflags.messages.links")) {
-                message = message.replace(matcher.group(), "");
-                requiredChanges = true;
-            } else {
-                String link = message.substring(matcher.start(), matcher.end());
-                message = message.replace(link, "<click:open_url:" + link + ">" + link + "</click>");
-                matcher = pattern.matcher(message);
-            }
-            if (!requiredChanges) {
-                break;
-            }
+            String link = pseudoMessage.substring(matcher.start(), matcher.end());
+            pseudoMessage = pseudoMessage.replace(link, "");
+            if(message.contains("<click:open_url:" + link + ">")) continue; // Skip if already a click-component
+            message = message.replace(link, "<click:open_url:" + link + ">" + link + "</click>");
+            matcher = pattern.matcher(pseudoMessage);
         }
 
         // Check for click-components
@@ -207,15 +204,13 @@ public class ChatUtil {
         }
 
         // Check for bold, italic, strikethrough, underline, obfuscated
-        pattern = Pattern.compile("<(bold|italic|strikethrough|u|obf)>");
+        pattern = Pattern.compile("<(bold|italic|strikethrough|underlined|obfuscated)>");
         matcher = pattern.matcher(message);
         while (matcher.find()) {
             boolean requiredChanges = false;
             String styleComponent = message.substring(matcher.start(), matcher.end());
-            Bukkit.getConsoleSender().sendMessage("Style: " + styleComponent);
             if (!sender.hasPermission("gpflags.messages.style." + styleComponent.replace("<", "").replace(">", ""))) {
                 message = message.replace(styleComponent, "");
-                Bukkit.getConsoleSender().sendMessage("Removed: " + styleComponent);
                 requiredChanges = true;
             }
             matcher = pattern.matcher(message);
