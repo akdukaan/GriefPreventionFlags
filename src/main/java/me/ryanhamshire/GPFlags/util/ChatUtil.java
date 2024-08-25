@@ -2,6 +2,7 @@ package me.ryanhamshire.GPFlags.util;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 import java.util.regex.Matcher;
@@ -15,6 +16,7 @@ public class ChatUtil {
         message = message.replace("§", "&");
         message = parseHexColorCodes(message);
         message = parseEasyToComplex(message);
+        if(sender == null) return message;
         message = validateMinimessage(sender, message);
         return message;
     }
@@ -41,20 +43,6 @@ public class ChatUtil {
         return message;
     }
 
-    // Parses legacy native-colors to MiniMessage native-colors
-    private static String parseNativeColorCodes(String message) {
-        Pattern pattern = Pattern.compile("&[a-flmnokrA-F0-9]");
-        Matcher matcher = pattern.matcher(message);
-        while (matcher.find()) {
-            String colorCode = message.substring(matcher.start(), matcher.end());
-            String replaceSharp = colorCode.replace("&", "");
-
-            message = message.replace(colorCode, getNativeColor(replaceSharp.toCharArray()[0]));
-            matcher = pattern.matcher(message);
-        }
-        return message;
-    }
-
     private static String parseEasyToComplex(String message) {
         message = message.replace("&0", "<color:black>");
         message = message.replace("&1", "<color:dark_blue>");
@@ -74,9 +62,9 @@ public class ChatUtil {
         message = message.replace("&f", "<color:white>");
         message = message.replace("&l", "<bold>");
         message = message.replace("&m", "<strikethrough>");
-        message = message.replace("&n", "<u>");
+        message = message.replace("&n", "<underlined>");
         message = message.replace("&o", "<italic>");
-        message = message.replace("&k", "<obf>");
+        message = message.replace("&k", "<obfuscated>");
         message = message.replace("&r", "<reset>");
         message = message.replace("<red>", "<color:red>");
         message = message.replace("<green>", "<color:green>");
@@ -94,90 +82,12 @@ public class ChatUtil {
         message = message.replace("<light_purple>", "<color:light_purple>");
         message = message.replace("<black>", "<color:black>");
         message = message.replace("<white>", "<color:white>");
+        message = message.replace("<b>", "<bold>");
+        message = message.replace("<u>", "<underlined>");
+        message = message.replace("<i>", "<italic>");
+        message = message.replace("<st>", "<strikethrough>");
+        message = message.replace("<obf>", "<obfuscated>");
         return message;
-    }
-
-    // Returns the MiniMessage color-code for a specific native-color. It also resets the color when the char is 'r'
-    private static String getNativeColor(char color) {
-        String reset = "<reset>";
-        String colorCode = "<color:white>";
-        if (color == 'r') return reset + colorCode;
-        switch (color) {
-            case 'a':
-                colorCode = "<color:green>";
-                break;
-            case 'b':
-                colorCode = "<color:aqua>";
-                break;
-            case 'c':
-                colorCode = "<color:red>";
-                break;
-            case 'd':
-                colorCode = "<color:light_purple>";
-                break;
-            case 'e':
-                colorCode = "<color:yellow>";
-                break;
-            case 'f':
-                colorCode = "<color:white>";
-                break;
-            case '0':
-                colorCode = "<color:black>";
-                break;
-            case '1':
-                colorCode = "<color:dark_blue>";
-                break;
-            case '2':
-                colorCode = "<color:dark_green>";
-                break;
-            case '3':
-                colorCode = "<color:dark_aqua>";
-                break;
-            case '4':
-                colorCode = "<color:dark_red>";
-                break;
-            case '5':
-                colorCode = "<color:dark_purple>";
-                break;
-            case '6':
-                colorCode = "<color:gold>";
-                break;
-            case '7':
-                colorCode = "<color:gray>";
-                break;
-            case '8':
-                colorCode = "<color:dark_gray>";
-                break;
-            case '9':
-                colorCode = "<color:blue>";
-                break;
-            case 'l':
-                colorCode = "<bold>";
-                break;
-            case 'm':
-                colorCode = "<strikethrough>";
-                break;
-            case 'n':
-                colorCode = "<u>";
-                break;
-            case 'o':
-                colorCode = "<italic>";
-                break;
-            case 'k':
-                colorCode = "<obf>";
-                break;
-        }
-        /*switch (color) {
-            case 'l':
-            case 'm':
-            case 'n':
-            case 'o':
-            case 'k':
-                break;
-            default:
-                colorCode = reset + colorCode;
-        }*/
-        return colorCode;
     }
 
     // Validates a minimessage for a specific sender, meaning we check for permissions and remove components if necessary
@@ -280,7 +190,6 @@ public class ChatUtil {
         }
 
         // Check for colors
-        message = ChatUtil.parseNativeColorCodes(message);
         pattern = Pattern.compile("<color:.*?>");
         matcher = pattern.matcher(message);
         while (matcher.find()) {
@@ -296,6 +205,26 @@ public class ChatUtil {
                 break;
             }
         }
+
+        // Check for bold, italic, strikethrough, underline, obfuscated
+        pattern = Pattern.compile("<(bold|italic|strikethrough|u|obf)>");
+        matcher = pattern.matcher(message);
+        while (matcher.find()) {
+            boolean requiredChanges = false;
+            String styleComponent = message.substring(matcher.start(), matcher.end());
+            Bukkit.getConsoleSender().sendMessage("Style: " + styleComponent);
+            if (!sender.hasPermission("gpflags.messages.style." + styleComponent.replace("<", "").replace(">", ""))) {
+                message = message.replace(styleComponent, "");
+                Bukkit.getConsoleSender().sendMessage("Removed: " + styleComponent);
+                requiredChanges = true;
+            }
+            matcher = pattern.matcher(message);
+
+            if (!requiredChanges) {
+                break;
+            }
+        }
+
         return message;
     }
 }
