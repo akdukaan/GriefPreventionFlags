@@ -176,7 +176,7 @@ public class ChatUtil {
             boolean requiredChanges = false;
             String hexComponent = message.substring(matcher.start(), matcher.end());
             if (!sender.hasPermission("gpflags.messages.hex-colors")) {
-                message = message.replace(hexComponent, "<color:white>");
+                message = message.replace(hexComponent, "");
                 requiredChanges = true;
             }
             matcher = pattern.matcher(message);
