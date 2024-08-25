@@ -51,7 +51,7 @@ public class MessagingUtil {
             message = PlaceholderApiHook.addPlaceholders(player, message);
         } catch (Throwable ignored) {}
         message = message.replace(COLOR_CHAR, '&');
-        Component component = ChatUtil.validatedHexComp(receiver, message);
+        Component component = ChatUtil.hexComp(message);
         GPFlags.getInstance().getAdventure().player(player).sendMessage(component);
 //        Audience.audience(player).sendMessage(component);
     }

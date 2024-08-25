@@ -2,6 +2,7 @@ package me.ryanhamshire.GPFlags;
 
 import com.google.common.io.Files;
 import me.ryanhamshire.GPFlags.flags.FlagDefinition;
+import me.ryanhamshire.GPFlags.util.ChatUtil;
 import me.ryanhamshire.GPFlags.util.MessagingUtil;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
@@ -116,8 +117,8 @@ public class FlagManager {
             }
             internalParameters.append(arg).append(" ");
         }
-        internalParameters = new StringBuilder(internalParameters.toString().trim());
-        friendlyParameters = new StringBuilder(friendlyParameters.toString().trim());
+        internalParameters = new StringBuilder(ChatUtil.validatedHexString(sender, internalParameters.toString()).trim());
+        friendlyParameters = new StringBuilder(ChatUtil.validatedHexString(sender, friendlyParameters.toString()).trim());
 
         SetFlagResult result;
         if (isActive) {

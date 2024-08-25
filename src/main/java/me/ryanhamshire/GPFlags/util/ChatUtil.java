@@ -11,12 +11,12 @@ public class ChatUtil {
     private static final MiniMessage minimessage = MiniMessage.builder().build();
 
     // Used to format chat-messages (legacy-support) of a specific sender related to his permissions
-    public static Component validatedHexComp(CommandSender sender, String message) {
+    public static String validatedHexString(CommandSender sender, String message) {
         message = message.replace("§", "&");
         message = parseHexColorCodes(message);
         message = parseEasyToComplex(message);
         message = validateMinimessage(sender, message);
-        return minimessage.deserialize(message);
+        return message;
     }
 
     // Used to format a chat-messages (legacy-support) without previous validation of somebody.
