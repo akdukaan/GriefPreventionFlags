@@ -36,7 +36,7 @@ public class CommandGPFlags implements TabExecutor {
                 MessagingUtil.sendMessage(commandSender, TextMode.Err, Messages.NoCommandPermission, command.toString());
                 return true;
             }
-            MessagingUtil.sendMessage(commandSender, "<gold>Server version: <yellow>" + Bukkit.getServer().getName() + Bukkit.getServer().getVersion());
+            MessagingUtil.sendMessage(commandSender, "<gold>Server version: <yellow>" + Bukkit.getServer().getName() + " " + Bukkit.getServer().getVersion());
             MessagingUtil.sendMessage(commandSender, "<gold>GP version: <yellow>" + GriefPrevention.instance.getDescription().getVersion());
             MessagingUtil.sendMessage(commandSender, "<gold>GPF version: <yellow>" + GPFlags.getInstance().getDescription().getVersion());
             return true;
