@@ -5,12 +5,7 @@ import me.ryanhamshire.GPFlags.FlagManager;
 import me.ryanhamshire.GPFlags.GPFlags;
 import me.ryanhamshire.GPFlags.MessageSpecifier;
 import me.ryanhamshire.GPFlags.Messages;
-import org.bukkit.entity.Animals;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.entity.WaterMob;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -27,6 +22,7 @@ public class FlagDef_NoMobDamage extends FlagDefinition {
         super(manager, plugin);
     }
 
+    // todo prevent withers from damaging snow golems
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamage(EntityDamageEvent event) {
         // check flag
@@ -55,7 +51,7 @@ public class FlagDef_NoMobDamage extends FlagDefinition {
             }
         }
 
-        if (entity instanceof Animals || entity instanceof WaterMob || entity.getType() == EntityType.VILLAGER || entity.getCustomName() != null) {
+        if (entity instanceof LivingEntity) {
             event.setCancelled(true);
         }
     }
