@@ -21,7 +21,9 @@ public class CommandAllFlags implements TabExecutor {
             return true;
         }
         for (FlagDefinition flag : GPFlags.getInstance().getFlagManager().getFlagDefinitions()) {
-            MessagingUtil.sendMessage(commandSender, flag.getName() + " <grey>" + flag.getFlagType());
+            if (commandSender.hasPermission("gpflags.flag." + flag.getName())) {
+                MessagingUtil.sendMessage(commandSender, flag.getName() + " <grey>" + flag.getFlagType());
+            }
         }
         return true;
     }
