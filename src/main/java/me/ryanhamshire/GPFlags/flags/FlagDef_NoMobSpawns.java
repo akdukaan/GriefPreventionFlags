@@ -48,8 +48,4 @@ public class FlagDef_NoMobSpawns extends FlagDefinition {
         return new MessageSpecifier(Messages.EnableMobSpawns);
     }
 
-    @Override
-    public List<FlagType> getFlagType() {
-        return Arrays.asList(FlagType.WORLD, FlagType.CLAIM, FlagType.SERVER);
-    }
 }

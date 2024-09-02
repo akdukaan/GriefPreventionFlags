@@ -105,11 +105,6 @@ public class FlagDef_NoMobSpawnsType extends FlagDefinition {
         return new MessageSpecifier(Messages.DisabledNoMobSpawnsType);
     }
 
-    @Override
-    public List<FlagType> getFlagType() {
-        return Arrays.asList(FlagType.WORLD, FlagType.CLAIM, FlagType.SERVER);
-    }
-
     private boolean isNotAllowed(EntityType type, Flag flag) {
         for (String t : flag.parameters.split(";")) {
             if (t.equalsIgnoreCase(type.toString())) return true;

@@ -22,7 +22,6 @@ public class FlagDef_NoMobDamage extends FlagDefinition {
         super(manager, plugin);
     }
 
-    // todo prevent withers from damaging snow golems
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamage(EntityDamageEvent event) {
         // check flag
@@ -69,11 +68,6 @@ public class FlagDef_NoMobDamage extends FlagDefinition {
     @Override
     public MessageSpecifier getUnSetMessage() {
         return new MessageSpecifier(Messages.EnableMobDamage);
-    }
-
-    @Override
-    public List<FlagType> getFlagType() {
-        return Arrays.asList(FlagType.CLAIM, FlagType.WORLD, FlagType.SERVER);
     }
 
 }

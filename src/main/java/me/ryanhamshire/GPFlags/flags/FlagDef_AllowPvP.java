@@ -322,8 +322,4 @@ public class FlagDef_AllowPvP extends PlayerMovementFlagDefinition {
         return new MessageSpecifier(Messages.RemoveEnabledPvP);
     }
 
-    @Override
-    public List<FlagType> getFlagType() {
-        return Arrays.asList(FlagType.CLAIM, FlagType.WORLD, FlagType.SERVER);
-    }
 }

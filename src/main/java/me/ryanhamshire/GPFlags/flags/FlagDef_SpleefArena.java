@@ -23,7 +23,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class FlagDef_SpleefArena extends FlagDefinition {
@@ -47,7 +46,7 @@ public class FlagDef_SpleefArena extends FlagDefinition {
         if (!claim.contains(Util.getInBoundsLocation(player), false, false)) return;
 
 
-            ArrayList<Chunk> chunks = claim.getChunks();
+        ArrayList<Chunk> chunks = claim.getChunks();
         for (Chunk chunk : chunks) {
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
@@ -199,7 +198,7 @@ public class FlagDef_SpleefArena extends FlagDefinition {
 
     @Override
     public List<FlagType> getFlagType() {
-        return Collections.singletonList(FlagType.CLAIM);
+        return List.of(FlagType.CLAIM);
     }
 
 }

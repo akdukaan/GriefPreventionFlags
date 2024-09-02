@@ -56,9 +56,4 @@ public class FlagDef_NoMonsterSpawns extends FlagDefinition {
         return new MessageSpecifier(Messages.EnableMonsterSpawns);
     }
 
-    @Override
-    public List<FlagType> getFlagType() {
-        return Arrays.asList(FlagType.CLAIM, FlagType.WORLD, FlagType.SERVER);
-    }
-
 }

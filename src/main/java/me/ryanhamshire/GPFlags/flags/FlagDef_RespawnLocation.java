@@ -16,6 +16,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -95,11 +96,6 @@ public class FlagDef_RespawnLocation extends FlagDefinition {
     @Override
     public MessageSpecifier getUnSetMessage() {
         return new MessageSpecifier(Messages.UnSetRespawnLocation);
-    }
-
-    @Override
-    public List<FlagType> getFlagType() {
-        return Collections.singletonList(FlagType.CLAIM);
     }
 
 }

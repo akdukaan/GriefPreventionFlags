@@ -56,9 +56,4 @@ public class FlagDef_AllowWitherDamage extends FlagDefinition {
         return new MessageSpecifier(Messages.DisabledAllowWitherDamage);
     }
 
-    @Override
-    public List<FlagType> getFlagType() {
-        return Arrays.asList(FlagType.CLAIM, FlagType.SERVER, FlagType.WORLD);
-    }
-
 }

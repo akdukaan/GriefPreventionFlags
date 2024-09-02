@@ -105,7 +105,7 @@ public class FlagDef_ViewContainers extends FlagDefinition {
 
     @Override
     public List<FlagType> getFlagType() {
-        return Arrays.asList(FlagType.CLAIM);
+        return Arrays.asList(FlagType.CLAIM, FlagType.DEFAULT);
     }
     
     public static Set<Inventory> getViewingInventories() {

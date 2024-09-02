@@ -33,15 +33,16 @@ public class FlagDef_NoElytra extends PlayerMovementFlagDefinition {
     private void onToggleElytra(EntityToggleGlideEvent event) {
         Entity entity = event.getEntity();
         if (!(entity instanceof Player)) return;
+        if (!event.isGliding()) return;
         Player player = (Player) event.getEntity();
-        Claim claim = GriefPrevention.instance.dataStore.getClaimAt(player.getLocation(), false, null);
-        Flag flag = this.getFlagInstanceAtLocation(player.getLocation(), player);
+        Location location = player.getLocation();
+        Flag flag = this.getFlagInstanceAtLocation(location, player);
         if (flag == null) return;
+        Claim claim = GriefPrevention.instance.dataStore.getClaimAt(location, false, null);
         if (Util.shouldBypass(player, claim, flag)) return;
 
-        if (event.isGliding()) {
-            event.setCancelled(true);
-        }
+        event.setCancelled(true);
+
     }
 
     @Override
@@ -61,7 +62,7 @@ public class FlagDef_NoElytra extends PlayerMovementFlagDefinition {
 
     @Override
     public List<FlagType> getFlagType() {
-        return Arrays.asList(FlagType.CLAIM, FlagType.WORLD, FlagType.SERVER);
+        return Arrays.asList(FlagType.CLAIM, FlagType.DEFAULT, FlagType.WORLD, FlagType.SERVER);
     }
 
 }

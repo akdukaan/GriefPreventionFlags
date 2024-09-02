@@ -22,9 +22,9 @@ public class FlagDef_NoCoralDeath extends FlagDefinition {
         Block block = event.getBlock();
         Material material = block.getType();
         if (!Tag.CORALS.isTagged(material) &&
-                Tag.CORAL_PLANTS.isTagged(material) &&
-                Tag.CORAL_BLOCKS.isTagged(material) &&
-                Tag.WALL_CORALS.isTagged(material)) {
+                !Tag.CORAL_PLANTS.isTagged(material) &&
+                !Tag.CORAL_BLOCKS.isTagged(material) &&
+                !Tag.WALL_CORALS.isTagged(material)) {
             return;
         }
 
@@ -47,11 +47,6 @@ public class FlagDef_NoCoralDeath extends FlagDefinition {
     @Override
     public MessageSpecifier getUnSetMessage() {
         return new MessageSpecifier(Messages.DisableNoCoralDeath);
-    }
-
-    @Override
-    public List<FlagType> getFlagType() {
-        return Arrays.asList(FlagType.CLAIM, FlagType.WORLD, FlagType.SERVER);
     }
 
 }

@@ -75,6 +75,6 @@ public class FlagDef_TrappedDestination extends FlagDefinition {
 
     @Override
     public List<FlagType> getFlagType() {
-        return Arrays.asList(FlagType.CLAIM, FlagType.WORLD, FlagType.SERVER);
+        return Arrays.asList(FlagType.CLAIM, FlagType.DEFAULT);
     }
 }

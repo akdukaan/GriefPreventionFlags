@@ -55,9 +55,4 @@ public class FlagDef_InfiniteArrows extends FlagDefinition {
         return new MessageSpecifier(Messages.DisableInfiniteArrows);
     }
 
-    @Override
-    public List<FlagType> getFlagType() {
-        return Arrays.asList(FlagType.CLAIM, FlagType.WORLD, FlagType.SERVER);
-    }
-
 }

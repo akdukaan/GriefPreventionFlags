@@ -36,8 +36,8 @@ public class CommandSetDefaultClaimFlag implements TabExecutor {
             return true;
         }
 
-        if (!def.getFlagType().contains(FlagDefinition.FlagType.CLAIM)) {
-            MessagingUtil.sendMessage(commandSender, TextMode.Err, Messages.NoFlagInClaim);
+        if (!def.getFlagType().contains(FlagDefinition.FlagType.DEFAULT)) {
+            MessagingUtil.sendMessage(commandSender, TextMode.Err, Messages.NoFlagInDefault);
             return true;
         }
 

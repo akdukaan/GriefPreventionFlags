@@ -5,6 +5,8 @@ import me.ryanhamshire.GPFlags.util.Util;
 import me.ryanhamshire.GriefPrevention.Claim;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -54,8 +56,7 @@ public class FlagDef_OwnerMemberFly extends FlagDefinition {
 
     @Override
     public List<FlagType> getFlagType() {
-        return Collections.singletonList(FlagType.CLAIM);
+        return Arrays.asList(FlagType.CLAIM, FlagType.DEFAULT);
     }
-
 
 }

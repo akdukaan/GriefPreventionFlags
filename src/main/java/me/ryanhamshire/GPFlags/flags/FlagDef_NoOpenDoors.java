@@ -21,6 +21,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -91,11 +92,6 @@ public class FlagDef_NoOpenDoors extends FlagDefinition {
     @Override
     public MessageSpecifier getUnSetMessage() {
         return new MessageSpecifier(Messages.DisableNoOpenDoor);
-    }
-
-    @Override
-    public List<FlagType> getFlagType() {
-        return Collections.singletonList(FlagType.CLAIM);
     }
 
 }

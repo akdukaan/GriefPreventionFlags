@@ -37,11 +37,13 @@ public class FlagDef_EnterCommand_Members extends PlayerMovementFlagDefinition {
         executeFlagCommandsFromConsole(flagTo, player, claimTo);
     }
 
-    public void executeFlagCommandsFromConsole(Flag flag, Player player, Claim claim) {
+    public void executeFlagCommandsFromConsole(Flag flag, Player player, @Nullable Claim claim) {
         String commandLinesString = flag.parameters.replace("%name%", player.getName()).replace("%uuid%", player.getUniqueId().toString());
-        String ownerName = claim.getOwnerName();
-        if (ownerName != null) {
-            commandLinesString = commandLinesString.replace("%owner%", ownerName);
+        if (claim != null) {
+            String ownerName = claim.getOwnerName();
+            if (ownerName != null) {
+                commandLinesString = commandLinesString.replace("%owner%", ownerName);
+            }
         }
         String[] commandLines = commandLinesString.split(";");
         for (String commandLine : commandLines) {

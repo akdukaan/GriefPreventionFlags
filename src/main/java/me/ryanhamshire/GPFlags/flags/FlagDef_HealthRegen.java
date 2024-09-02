@@ -36,12 +36,12 @@ public class FlagDef_HealthRegen extends TimedPlayerFlagDefinition {
         Flag flag = this.getFlagInstanceAtLocation(player.getLocation(), player);
         if (flag == null) return;
 
-        int healAmount = 2;
+        int healAmount = 1;
         if (flag.parameters != null && !flag.parameters.isEmpty()) {
             try {
                 healAmount = Integer.parseInt(flag.parameters);
             } catch (NumberFormatException ignored) {
-                // Simply don't heal if amount is invalid
+                // Heal amount can be 1 if invalid
             }
         }
 
@@ -101,11 +101,6 @@ public class FlagDef_HealthRegen extends TimedPlayerFlagDefinition {
             }
         }
         return desired <= allowed;
-    }
-
-    @Override
-    public List<FlagType> getFlagType() {
-        return Arrays.asList(FlagType.CLAIM, FlagType.WORLD, FlagType.SERVER);
     }
 
 }

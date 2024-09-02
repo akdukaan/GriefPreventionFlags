@@ -108,9 +108,4 @@ public class FlagDef_NoMonsters extends FlagDefinition {
         return new MessageSpecifier(Messages.EnableMonsters);
     }
 
-    @Override
-    public List<FlagDefinition.FlagType> getFlagType() {
-        return Arrays.asList(FlagDefinition.FlagType.CLAIM, FlagDefinition.FlagType.WORLD, FlagDefinition.FlagType.SERVER);
-    }
-
 }

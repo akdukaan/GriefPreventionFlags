@@ -16,7 +16,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.Nullable;
 
-public class FlagDef_NoPotionEffects extends PlayerMovementFlagDefinition implements Listener {
+public class FlagDef_NoPotionEffects extends PlayerMovementFlagDefinition {
 
     public FlagDef_NoPotionEffects(FlagManager manager, GPFlags plugin) {
         super(manager, plugin);

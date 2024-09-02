@@ -55,9 +55,4 @@ public class FlagDef_CommandBlackList extends CommandListFlagDefinition {
         return new MessageSpecifier(Messages.DisableCommandBlackList);
     }
 
-    @Override
-    public List<FlagType> getFlagType() {
-        return Arrays.asList(FlagType.CLAIM, FlagType.SERVER, FlagType.WORLD);
-    }
-
 }

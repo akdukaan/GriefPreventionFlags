@@ -51,10 +51,5 @@ public class FlagDef_PermissionFly extends FlagDefinition {
         return new MessageSpecifier(Messages.PermissionFlightDisabled);
     }
 
-    @Override
-    public List<FlagType> getFlagType() {
-        return Arrays.asList(FlagType.CLAIM, FlagType.WORLD, FlagType.SERVER);
-    }
-
 }
 

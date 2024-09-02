@@ -56,9 +56,4 @@ public class FlagDef_NoMapMaking extends FlagDefinition {
         return new MessageSpecifier(Messages.DisableNoMapMaking);
     }
 
-    @Override
-    public List<FlagType> getFlagType() {
-        return Arrays.asList(FlagType.CLAIM, FlagType.WORLD, FlagType.SERVER);
-    }
-
 }

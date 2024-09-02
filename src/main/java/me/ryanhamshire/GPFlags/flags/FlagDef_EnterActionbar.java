@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
@@ -28,11 +29,13 @@ public class FlagDef_EnterActionbar extends PlayerMovementFlagDefinition {
         sendActionbar(flagTo, player, claimTo);
     }
 
-    public void sendActionbar(Flag flag, Player player, Claim claim) {
+    public void sendActionbar(@NotNull Flag flag, @NotNull Player player, @Nullable Claim claim) {
         String message = flag.parameters;
-        String owner = claim.getOwnerName();
-        if (owner != null) {
-            message = message.replace("%owner%", owner);
+        if (claim != null) {
+            String owner = claim.getOwnerName();
+            if (owner != null) {
+                message = message.replace("%owner%", owner);
+            }
         }
         message = message.replace("%name%", player.getName());
         MessagingUtil.sendActionbar(player, message);

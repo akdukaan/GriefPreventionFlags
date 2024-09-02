@@ -61,9 +61,4 @@ public class FlagDef_NetherPortalPlayerCommand extends FlagDefinition {
         return new MessageSpecifier(Messages.DisableNetherPortalPlayerCommand);
     }
 
-    @Override
-    public List<FlagType> getFlagType() {
-        return Arrays.asList(FlagType.CLAIM, FlagType.WORLD);
-    }
-
 }

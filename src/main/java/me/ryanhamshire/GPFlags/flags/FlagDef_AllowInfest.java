@@ -39,10 +39,4 @@ public class FlagDef_AllowInfest extends FlagDefinition {
     public MessageSpecifier getUnSetMessage() {
         return new MessageSpecifier(Messages.DisabledAllowInfest);
     }
-
-    @Override
-    public List<FlagType> getFlagType() {
-        return Arrays.asList(FlagType.CLAIM);
-    }
-
 }

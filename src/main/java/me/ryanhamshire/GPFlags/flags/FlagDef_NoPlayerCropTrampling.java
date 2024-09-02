@@ -39,9 +39,4 @@ public class FlagDef_NoPlayerCropTrampling extends FlagDefinition {
         return new MessageSpecifier(Messages.DisableNoPlayerCropTrampling);
     }
 
-    @Override
-    public List<FlagType> getFlagType() {
-        return Arrays.asList(FlagType.CLAIM, FlagType.SERVER, FlagType.WORLD);
-    }
-
 }
