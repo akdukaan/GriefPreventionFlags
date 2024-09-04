@@ -190,14 +190,13 @@ public class FlagManager {
     /**
      * @param location
      * @param flagname
-     * @param cachedClaim
+     * @param claim
      * @return the effective flag at the location
      */
-    public @Nullable Flag getEffectiveFlag(@NotNull Location location, @NotNull String flagname, @Nullable Claim cachedClaim) {
+    public @Nullable Flag getEffectiveFlag(@NotNull Location location, @NotNull String flagname, @Nullable Claim claim) {
         flagname = flagname.toLowerCase();
         Flag flag;
         if (GriefPrevention.instance.claimsEnabledForWorld(location.getWorld())) {
-            Claim claim = GriefPrevention.instance.dataStore.getClaimAt(location, false, cachedClaim);
             if (claim != null) {
                 flag = getRawClaimFlag(claim, flagname);
                 if (flag != null) {
