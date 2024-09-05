@@ -1,10 +1,6 @@
 package me.ryanhamshire.GPFlags.flags;
 
-import me.ryanhamshire.GPFlags.FlagManager;
-import me.ryanhamshire.GPFlags.GPFlags;
-import me.ryanhamshire.GPFlags.MessageSpecifier;
-import me.ryanhamshire.GPFlags.Messages;
-import me.ryanhamshire.GPFlags.SetFlagResult;
+import me.ryanhamshire.GPFlags.*;
 import me.ryanhamshire.GPFlags.util.MessagingUtil;
 import me.ryanhamshire.GPFlags.util.Util;
 import me.ryanhamshire.GriefPrevention.Claim;
@@ -164,13 +160,14 @@ public class FlagDef_ChangeBiome extends FlagDefinition {
 
     @EventHandler
     public void onClaimDelete(ClaimDeletedEvent e) {
-        if (e.getClaim().parent != null) {
-            // todo here is where we'd get the parent's flag and set the inner biome to that
+        Claim claim = e.getClaim();
+        Claim parent = claim.parent;
+        if (parent != null) {
+            Flag flag = getEffectiveFlag(parent, parent.getLesserBoundaryCorner().getWorld());
+            changeBiome(Bukkit.getConsoleSender(), claim, flag.parameters);
             return;
         }
-        Claim claim = e.getClaim();
-        FlagManager fm = GPFlags.getInstance().getFlagManager();
-        if (fm.getEffectiveFlag(claim.getLesserBoundaryCorner(), this.getName(), claim) == null) return;
+        if (getEffectiveFlag(claim, claim.getLesserBoundaryCorner().getWorld()) == null) return;
 
         resetBiome(claim);
     }
