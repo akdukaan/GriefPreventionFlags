@@ -118,12 +118,12 @@ public class FlagDef_ChangeBiome extends FlagDefinition {
         greater.setY(Util.getMaxHeight(greater));
         Location lesser = claim.getLesserBoundaryCorner();
 
-        int lX = (int) lesser.getX();
-        int lY = (int) lesser.getY();
-        int lZ = (int) lesser.getZ();
-        int gX = (int) greater.getX();
-        int gY = (int) greater.getY();
-        int gZ = (int) greater.getZ();
+        int lX = lesser.getBlockX();
+        int lY = lesser.getBlockY();
+        int lZ = lesser.getBlockZ();
+        int gX = greater.getBlockX();
+        int gY = greater.getBlockY();
+        int gZ = greater.getBlockZ();
         World world = lesser.getWorld();
         int ticks = 0;
         for (int x = lX; x < gX; x++) {
