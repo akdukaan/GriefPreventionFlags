@@ -1,13 +1,12 @@
 package me.ryanhamshire.GPFlags.flags;
 
 import me.ryanhamshire.GPFlags.*;
-import org.bukkit.block.data.type.Farmland;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import java.util.Arrays;
-import java.util.List;
 
 public class FlagDef_NoPlayerCropTrampling extends FlagDefinition {
 
@@ -17,10 +16,17 @@ public class FlagDef_NoPlayerCropTrampling extends FlagDefinition {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
+        // Check that the event is a crop trample
         if (event.getAction() != Action.PHYSICAL) return;
-        if (!(event.getClickedBlock() instanceof Farmland)) return;
+        Block block = event.getClickedBlock();
+        if (block == null) return;
+        if (!(block.getType() == Material.FARMLAND)) return;
+
+        // Check that the flag is set
         Flag flag = this.getFlagInstanceAtLocation(event.getPlayer().getLocation(), null);
         if (flag == null) return;
+
+        // Prevent the trample
         event.setCancelled(true);
     }
 
