@@ -195,7 +195,7 @@ public class GPFlagsConfig {
             this.flagManager.registerFlagDefinition(new FlagDef_NotifyExit(this.flagManager, plugin));
             this.flagManager.registerFlagDefinition(new FlagDef_NoPotionEffects(this.flagManager, plugin));
             this.flagManager.registerFlagDefinition(new FlagDef_SpawnReasonWhitelist(this.flagManager, plugin));
-            this.flagManager.registerFlagDefinition(new FlagDef_NoPlayerCropTrampling(this.flagManager, plugin));
+            this.flagManager.registerFlagDefinition(new FlagDef_NoCropTrampling(this.flagManager, plugin));
 
             this.flagManager.registerFlagDefinition(new FlagDef_ViewContainers(this.flagManager, plugin));
             this.flagManager.registerFlagDefinition(new FlagDef_ReadLecterns(this.flagManager, plugin));
