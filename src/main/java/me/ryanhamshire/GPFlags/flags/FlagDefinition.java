@@ -68,11 +68,13 @@ public abstract class FlagDefinition implements Listener {
      * @return Logical instance of flag at location
      */
     public Flag getFlagInstanceAtLocation(@NotNull Location location, @Nullable Player player) {
-        if (player != null) {
+        if (cachedClaim == null && player != null) {
             PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId());
             cachedClaim = playerData.lastClaim;
         }
-        return flagManager.getEffectiveFlag(location, this.getName(), cachedClaim);
+        Claim claim = GriefPrevention.instance.dataStore.getClaimAt(location, false, false, cachedClaim);
+        cachedClaim = claim;
+        return flagManager.getEffectiveFlag(location, this.getName(), claim);
     }
 
     public Flag getEffectiveFlag(@Nullable Claim claim, @NotNull World world) {
