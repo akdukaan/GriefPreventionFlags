@@ -10,6 +10,7 @@ import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.*;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permissible;
@@ -415,6 +416,15 @@ public class Util {
         }
 
         return group;
+    }
+
+    public static boolean isSpawnerReason(SpawnReason reason) {
+        if (reason == SpawnReason.SPAWNER) return true;
+        if (reason == SpawnReason.SPAWNER_EGG) return true;
+        try {
+            if (reason == SpawnReason.TRIAL_SPAWNER) return true;
+        } catch (NoSuchFieldError ignored) {}
+        return false;
     }
 
 }

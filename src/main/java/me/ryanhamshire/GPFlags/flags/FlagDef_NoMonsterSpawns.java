@@ -13,9 +13,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
-import java.util.Arrays;
-import java.util.List;
-
 public class FlagDef_NoMonsterSpawns extends FlagDefinition {
 
     public FlagDef_NoMonsterSpawns(FlagManager manager, GPFlags plugin) {
@@ -34,9 +31,7 @@ public class FlagDef_NoMonsterSpawns extends FlagDefinition {
         if (reason == SpawnReason.SLIME_SPLIT) return;
 
         WorldSettings settings = this.settingsManager.get(event.getEntity().getWorld());
-        if (settings.noMonsterSpawnIgnoreSpawners && (reason == SpawnReason.SPAWNER || reason == SpawnReason.SPAWNER_EGG || reason == SpawnReason.TRIAL_SPAWNER)) {
-            return;
-        }
+        if (settings.noMonsterSpawnIgnoreSpawners && Util.isSpawnerReason(reason)) return;
 
         event.setCancelled(true);
     }
