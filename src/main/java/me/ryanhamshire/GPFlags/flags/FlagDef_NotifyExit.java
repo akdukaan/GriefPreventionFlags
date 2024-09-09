@@ -42,7 +42,9 @@ public class FlagDef_NotifyExit extends PlayerMovementFlagDefinition {
     }
 
     public void notifyExit(@NotNull Flag flag, @NotNull Claim claim, @NotNull Player player) {
-        Player owner = Bukkit.getPlayer(claim.ownerID);
+        UUID uuid = claim.ownerID;
+        if (uuid == null) return;
+        Player owner = Bukkit.getPlayer(uuid);
         if (owner == null) return;
         if (owner.getName().equals(player.getName())) return;
         String param = flag.parameters;
