@@ -119,7 +119,16 @@ public class PlayerListener implements Listener {
         Claim lastClaim = dataStore.getPlayerData(rando.getUniqueId()).lastClaim;
         Claim claimFrom = dataStore.getClaimAt(locFromAdj, false, lastClaim);
         Claim claimTo = dataStore.getClaimAt(locToAdj, false, null);
-        if (claimTo == claimFrom) return false;
+        if (claimTo == claimFrom) {
+            // If both claims exist and are the same, there's no context change
+            if (claimTo != null) {
+                return false;
+            }
+            // If both claims are null and are the same world, there's no context change
+            if (locFrom.getWorld() == locTo.getWorld()) {
+                return false;
+            }
+        }
 
         ArrayList<PlayerPreClaimBorderEvent> events = new ArrayList<>();
         for (Player passenger : players) {
