@@ -43,6 +43,7 @@ public class FlagDef_NoEnter extends PlayerMovementFlagDefinition {
         if (flag == null) return true;
 
         if (Util.canAccess(claimTo, player)) return true;
+        if (player.hasPermission("gpflags.bypass.noenter")) return true;
 
         MessagingUtil.sendMessage(player, TextMode.Err, Messages.NoEnterMessage);
         return false;
