@@ -72,18 +72,15 @@ public class FlightManager implements Listener {
 
     @EventHandler
     public void onEnterNewClaim(PlayerPostClaimBorderEvent event) {
+        // Get the status at their old location
         Location locFrom = event.getLocFrom();
         Location locTo = event.getLocTo();
         Player player = event.getPlayer();
-
-        if (locFrom == null) {
-            managePlayerFlight(player, null, locTo);
-            return;
-        }
-
         Claim fromClaim = event.getClaimFrom();
         Claim toClaim = event.getClaimTo();
         Boolean oldFlightAllowedStatus = gpfAllowsFlight(player, locFrom, fromClaim);
+
+        // A second later, do a check on their new location and compare the two values
         Bukkit.getScheduler().runTaskLater(GPFlags.getInstance(), () -> {
             Boolean newFlightAllowedStatus = gpfAllowsFlight(player, locTo, toClaim);
             managePlayerFlight(player, oldFlightAllowedStatus, newFlightAllowedStatus);
@@ -200,9 +197,13 @@ public class FlightManager implements Listener {
             }
             return;
         }
-        if (flightAllowedAtNewLocation) {
-            turnOnFlight(player);
-        } else {
+        if (flightAllowedAtNewLocation == Boolean.TRUE) {
+            if (gpfManagesFlight(player)) {
+                turnOnFlight(player);
+            }
+            return;
+        }
+        if (flightAllowedAtNewLocation == Boolean.FALSE) {
             turnOffFlight(player);
         }
     }
