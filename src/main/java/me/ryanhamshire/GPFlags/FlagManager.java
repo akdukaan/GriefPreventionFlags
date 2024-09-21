@@ -193,7 +193,8 @@ public class FlagManager {
      * @param claim
      * @return the effective flag at the location
      */
-    public @Nullable Flag getEffectiveFlag(@NotNull Location location, @NotNull String flagname, @Nullable Claim claim) {
+    public @Nullable Flag getEffectiveFlag(@Nullable Location location, @NotNull String flagname, @Nullable Claim claim) {
+        if (location == null) return null;
         flagname = flagname.toLowerCase();
         Flag flag;
         if (GriefPrevention.instance.claimsEnabledForWorld(location.getWorld())) {
