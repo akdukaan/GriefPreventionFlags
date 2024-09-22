@@ -54,7 +54,6 @@ public class MessagingUtil {
         message = message.replace(COLOR_CHAR, '&');
         Component component = MiniMessage.miniMessage().deserialize(message);
         GPFlags.getInstance().getAdventure().player(player).sendMessage(component);
-//        Audience.audience(player).sendMessage(component);
     }
 
     private static void logToConsole(String message) {
@@ -63,6 +62,9 @@ public class MessagingUtil {
     }
 
     public static void sendActionbar(Player player, String message) {
+        try {
+            message = PlaceholderApiHook.addPlaceholders(player, message);
+        } catch (Throwable ignored) {}
         message = message.replace(COLOR_CHAR, '&');
         Component component = MiniMessage.miniMessage().deserialize(message);
         GPFlags.getInstance().getAdventure().player(player).sendActionBar(component);
