@@ -270,18 +270,20 @@ public class Util {
         }
     }
 
-    public static Location getInBoundsLocation(Location loc) {
+    /**
+     * We want to consider someone above the world height to be within a claim
+     * but below world height to not be in a claim.
+     * @param loc Actual location
+     * @return A mock location for the player that can be used to find the claim
+     */
+    public static Location getInBoundsLocation(@NotNull Location loc) {
+        // If we're below max height, mock location can be the same
         World world = loc.getWorld();
         int maxHeight = getMaxHeight(world);
-        if (loc.getBlockY() > maxHeight) {
-            loc.setY(maxHeight);
-            return loc;
-        }
-        int minHeight = getMinHeight(world);
-        if (loc.getBlockY() < minHeight) {
-            loc.setY(minHeight);
-        }
-        return loc;
+        if (loc.getBlockY() <= maxHeight) return loc;
+
+        // If we're above max height, make a new mock location
+        return new Location(loc.getWorld(), loc.getX(), maxHeight, loc.getZ());
     }
 
     public static Location getInBoundsLocation(Player p) {
