@@ -18,11 +18,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -140,6 +136,19 @@ public class FlagManager {
             def.incrementInstances();
         }
         claimFlags.put(key, flag);
+
+        // Deal with default flags being set
+        if (DEFAULT_FLAG_ID.equals(claimId)) {
+            for (Claim claim : GriefPrevention.instance.dataStore.getClaims()) {
+                if (isActive) {
+                    def.onFlagSet(claim, flag.parameters);
+                } else {
+                    def.onFlagUnset(claim);
+                }
+            }
+            return result;
+        }
+
         Claim claim;
         try {
             claim = GriefPrevention.instance.dataStore.getClaim(Long.parseLong(claimId));
