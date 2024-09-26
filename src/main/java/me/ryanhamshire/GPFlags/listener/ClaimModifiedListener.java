@@ -1,7 +1,6 @@
 package me.ryanhamshire.GPFlags.listener;
 
 import me.ryanhamshire.GPFlags.event.PlayerPostClaimBorderEvent;
-import me.ryanhamshire.GPFlags.event.PlayerPreClaimBorderEvent;
 import me.ryanhamshire.GPFlags.util.Util;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.events.ClaimModifiedEvent;

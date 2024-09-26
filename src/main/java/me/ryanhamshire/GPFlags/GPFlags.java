@@ -52,6 +52,7 @@ public class GPFlags extends JavaPlugin {
         } catch (ClassNotFoundException e) {
             Bukkit.getPluginManager().registerEvents(new ClaimModifiedListener(), this);
         }
+        Bukkit.getPluginManager().registerEvents(new ClaimCreatedListener(), this);
         Bukkit.getPluginManager().registerEvents(new ClaimTransferListener(), this);
         Bukkit.getPluginManager().registerEvents(new FlightManager(), this);
 
