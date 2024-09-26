@@ -26,7 +26,7 @@ public class FlagDef_PermissionFly extends FlagDefinition {
     @Override
     public void onFlagUnset(Claim claim) {
         for (Player p : Util.getPlayersIn(claim)) {
-            FlightManager.managePlayerFlight(p, null, p.getLocation());
+            FlightManager.manageFlightLater(p, 1, p.getLocation());
         }
     }
 

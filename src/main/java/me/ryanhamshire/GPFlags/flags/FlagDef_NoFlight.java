@@ -16,6 +16,20 @@ public class FlagDef_NoFlight extends FlagDefinition {
         super(manager, plugin);
     }
 
+    @Override
+    public void onFlagSet(Claim claim, String param) {
+        for (Player p : Util.getPlayersIn(claim)) {
+            FlightManager.managePlayerFlight(p, null, p.getLocation());
+        }
+    }
+
+    @Override
+    public void onFlagUnset(Claim claim) {
+        for (Player p : Util.getPlayersIn(claim)) {
+            FlightManager.manageFlightLater(p, 1, p.getLocation());
+        }
+    }
+
     public static boolean letPlayerFly(Player player, Location location, Claim claim) {
         Flag flag = GPFlags.getInstance().getFlagManager().getEffectiveFlag(location, "NoFlight", claim);
         if (flag == null) return true;
