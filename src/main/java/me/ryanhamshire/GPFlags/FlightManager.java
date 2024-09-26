@@ -80,7 +80,7 @@ public class FlightManager implements Listener {
         Claim toClaim = event.getClaimTo();
         Boolean oldFlightAllowedStatus = gpfAllowsFlight(player, locFrom, fromClaim);
 
-        // A second later, do a check on their new location and compare the two values
+        // A tick later, do a check on their new location and compare the two values
         Bukkit.getScheduler().runTaskLater(GPFlags.getInstance(), () -> {
             Boolean newFlightAllowedStatus = gpfAllowsFlight(player, locTo, toClaim);
             managePlayerFlight(player, oldFlightAllowedStatus, newFlightAllowedStatus);

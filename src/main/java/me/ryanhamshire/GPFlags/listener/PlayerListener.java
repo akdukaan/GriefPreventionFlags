@@ -86,7 +86,7 @@ public class PlayerListener implements Listener {
         Bukkit.getPluginManager().callEvent(borderEvent);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     private void onRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
         Location spawn = event.getRespawnLocation();
