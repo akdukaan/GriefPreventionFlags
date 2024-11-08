@@ -1,7 +1,5 @@
 package me.ryanhamshire.GPFlags;
 
-import org.checkerframework.checker.units.qual.Prefix;
-
 /**
  * Plugin messages
  */
