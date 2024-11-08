@@ -389,6 +389,9 @@ public class FlagsDataStore {
         this.addDefault(defaults, Messages.DisableBuySubclaim, "This subclaim can no longer be purchased.", null);
         this.addDefault(defaults, Messages.SubclaimPrice, "You can buy this subclaim for {0}. If you wish to do so, use /buysubclaim.", "0: cost");
 
+        this.addDefault(defaults, Messages.EnabledAllowVillagerTrade, "Villagers can now trade in this region.", null);
+        this.addDefault(defaults, Messages.DisabledAllowVillagerTrade, "Villagers can no longer trade in this region.", null);
+
         //load the config file
         File file = new File(messagesFilePath);
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
