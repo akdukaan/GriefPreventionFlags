@@ -1,5 +1,7 @@
 package me.ryanhamshire.GPFlags;
 
+import org.checkerframework.checker.units.qual.Prefix;
+
 /**
  * Plugin messages
  */
@@ -273,6 +275,9 @@ public enum Messages {
     EnableBuySubclaim,
     DisableBuySubclaim,
     SubclaimPrice,
+
+    EnabledAllowVillagerTrade,
+    DisabledAllowVillagerTrade,
 
     Prefix
 }
