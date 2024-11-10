@@ -30,17 +30,17 @@ public class FlagDef_NoMobDamage extends FlagDefinition {
         if (flag == null) return;
 
         // fix for GP discussion https://github.com/TechFortress/GriefPrevention/issues/1481
-        if (event.getDamage() == 0 && event.getCause() == DamageCause.CUSTOM) return;
+        DamageCause cause = event.getCause();
+        if (event.getDamage() == 0 && cause == DamageCause.CUSTOM) return;
 
         // Always allow cramming damage
-        DamageCause cause = event.getCause();
         if (cause == DamageCause.CRAMMING) return;
 
         // Always allow attacks to players
         if (entity instanceof Player) return;
 
         // Always allow attacks from players
-        if (cause == DamageCause.ENTITY_ATTACK || cause == DamageCause.PROJECTILE) {
+        if (event instanceof EntityDamageByEntityEvent) {
             EntityDamageByEntityEvent event2 = (EntityDamageByEntityEvent) event;
             Entity attacker = event2.getDamager();
             if (attacker.getType() == EntityType.PLAYER) return;
