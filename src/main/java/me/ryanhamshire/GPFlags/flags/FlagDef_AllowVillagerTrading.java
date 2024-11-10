@@ -6,7 +6,6 @@ import me.ryanhamshire.GPFlags.GPFlags;
 import me.ryanhamshire.GPFlags.MessageSpecifier;
 import me.ryanhamshire.GPFlags.Messages;
 import me.ryanhamshire.GriefPrevention.events.ClaimPermissionCheckEvent;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -31,14 +30,6 @@ public class FlagDef_AllowVillagerTrading extends FlagDefinition {
     public MessageSpecifier getUnSetMessage() {
         return new MessageSpecifier(Messages.DisabledAllowVillagerTrading);
     }
-    public boolean canTrade(Villager villager, Player player) {
-
-//        get the flag at the villager's location
-        final Flag flag = this.getFlagInstanceAtLocation(villager.getLocation(), player);
-
-//        allow the player to trade if the flag is set
-        return flag != null;
-    }
 
     @EventHandler
     public void onGPVillagerTrade(ClaimPermissionCheckEvent event) {
@@ -53,8 +44,9 @@ public class FlagDef_AllowVillagerTrading extends FlagDefinition {
         if(!(clickMobEvent.getRightClicked() instanceof Villager)) return;
         final Villager villager = (Villager) clickMobEvent.getRightClicked();
 
-//        check if the player is allowed to trade (if the flag is set)
-        if(!canTrade(villager, clickMobEvent.getPlayer())) return;
+//        check if the current flag (AllowVillagerTrading) is set at the villager's location
+        final Flag flag = this.getFlagInstanceAtLocation(villager.getLocation(), clickMobEvent.getPlayer());
+        if(flag == null) return;
 
 //        allow the player to trade (in GP, a null denial reason basically tells GP the player has permission)
         event.setDenialReason(null);
