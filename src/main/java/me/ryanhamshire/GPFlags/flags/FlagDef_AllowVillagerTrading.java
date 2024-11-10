@@ -11,25 +11,25 @@ import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
-public class FlagDef_AllowVillagerTrade extends FlagDefinition {
+public class FlagDef_AllowVillagerTrading extends FlagDefinition {
 
-    public FlagDef_AllowVillagerTrade(FlagManager manager, GPFlags plugin) {
+    public FlagDef_AllowVillagerTrading(FlagManager manager, GPFlags plugin) {
         super(manager, plugin);
     }
 
     @Override
     public String getName() {
-        return "AllowVillagerTrade";
+        return "AllowVillagerTrading";
     }
 
     @Override
     public MessageSpecifier getSetMessage(String parameters) {
-        return new MessageSpecifier(Messages.EnabledAllowVillagerTrade);
+        return new MessageSpecifier(Messages.EnabledAllowVillagerTrading);
     }
 
     @Override
     public MessageSpecifier getUnSetMessage() {
-        return new MessageSpecifier(Messages.DisabledAllowVillagerTrade);
+        return new MessageSpecifier(Messages.DisabledAllowVillagerTrading);
     }
     public boolean canTrade(Villager villager, Player player) {
 

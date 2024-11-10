@@ -274,8 +274,8 @@ public enum Messages {
     DisableBuySubclaim,
     SubclaimPrice,
 
-    EnabledAllowVillagerTrade,
-    DisabledAllowVillagerTrade,
+    EnabledAllowVillagerTrading,
+    DisabledAllowVillagerTrading,
 
     Prefix
 }
