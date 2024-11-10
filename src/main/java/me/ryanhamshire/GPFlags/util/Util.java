@@ -292,14 +292,14 @@ public class Util {
 
     public static boolean isClaimOwner(Claim c, Player p) {
         if (c == null) return false;
-        if (c.ownerID == null) return false;
-        return c.ownerID.equals(p.getUniqueId());
+        if (c.getOwnerID() == null) return false;
+        return c.getOwnerID().equals(p.getUniqueId());
     }
 
     public static boolean shouldBypass(@NotNull Player p, @Nullable Claim c, @NotNull String basePerm) {
         if (p.hasPermission(basePerm)) return true;
         if (c == null) return p.hasPermission(basePerm + ".nonclaim");
-        if (c.ownerID == null && p.hasPermission(basePerm + ".adminclaim")) return true;
+        if (c.getOwnerID() == null && p.hasPermission(basePerm + ".adminclaim")) return true;
         if (isClaimOwner(c, p) && p.hasPermission(basePerm + ".ownclaim")) return true;
         if (canManage(c, p) && p.hasPermission(basePerm + ".manage")) return true;
         if (canBuild(c, p) && (p.hasPermission(basePerm + ".build") || p.hasPermission(basePerm + ".edit"))) return true;

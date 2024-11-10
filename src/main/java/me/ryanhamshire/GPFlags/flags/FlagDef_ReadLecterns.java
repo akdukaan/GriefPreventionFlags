@@ -50,7 +50,7 @@ public class FlagDef_ReadLecterns extends FlagDefinition {
         PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId());
         Claim claim = GriefPrevention.instance.dataStore.getClaimAt(block.getLocation(), false, playerData.lastClaim);
         if (claim == null) return;
-        if (player.getUniqueId().equals(claim.ownerID)) return;
+        if (player.getUniqueId().equals(claim.getOwnerID())) return;
         // Dont pass in the event so we dont infinite loop
         if (claim.checkPermission(player, ClaimPermission.Inventory, null) == null) return;
 

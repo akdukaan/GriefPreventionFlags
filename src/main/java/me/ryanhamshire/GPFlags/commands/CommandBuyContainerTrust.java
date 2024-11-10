@@ -33,7 +33,7 @@ public class CommandBuyContainerTrust implements CommandExecutor {
             if (flag.getFlagDefinition().getName().equalsIgnoreCase("BuyContainerTrust")) {
                 if (claim.getPermission(player.getUniqueId().toString()) == ClaimPermission.Inventory  ||
                         claim.getPermission(player.getUniqueId().toString()) == ClaimPermission.Build ||
-                        player.getUniqueId().equals(claim.ownerID)) {
+                        player.getUniqueId().equals(claim.getOwnerID())) {
                     MessagingUtil.sendMessage(sender, TextMode.Err, Messages.AlreadyHaveTrust);
                     return true;
                 }
@@ -52,8 +52,8 @@ public class CommandBuyContainerTrust implements CommandExecutor {
                     MessagingUtil.sendMessage(sender, TextMode.Err, Messages.NotEnoughMoney);
                     return true;
                 }
-                if (claim.ownerID != null) {
-                    VaultHook.giveMoney(claim.ownerID, cost);
+                if (claim.getOwnerID() != null) {
+                    VaultHook.giveMoney(claim.getOwnerID(), cost);
                 }
                 claim.setPermission(player.getUniqueId().toString(), ClaimPermission.Inventory);
                 GriefPrevention.instance.dataStore.saveClaim(claim);

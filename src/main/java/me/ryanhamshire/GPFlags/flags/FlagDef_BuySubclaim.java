@@ -65,7 +65,7 @@ public class FlagDef_BuySubclaim extends PlayerMovementFlagDefinition {
         if (claimTo == null) return;
         if (claimTo.parent == null) return;
         if (claimTo.getPermission(player.getUniqueId().toString()) == ClaimPermission.Build) return;
-        if (player.getUniqueId().equals(claimTo.ownerID)) return;
+        if (player.getUniqueId().equals(claimTo.getOwnerID())) return;
 
         MessagingUtil.sendMessage(player, TextMode.Info, Messages.SubclaimPrice, flagTo.parameters);
     }
