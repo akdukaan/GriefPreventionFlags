@@ -9,6 +9,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityToggleGlideEvent;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -22,11 +23,12 @@ public class FlagDef_NoElytra extends PlayerMovementFlagDefinition {
     }
 
     @Override
-    public void onChangeClaim(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo, @Nullable Flag flagFrom, @Nullable Flag flagTo) {
+    public void onChangeClaim(@NotNull Player player, Location lastLocation, @NotNull Location to, Claim claimFrom, Claim claimTo, @Nullable Flag flagFrom, @Nullable Flag flagTo) {
         if (flagTo == null) return;
         if (!player.isGliding()) return;
         if (Util.shouldBypass(player, claimTo, flagTo)) return;
         player.setGliding(false);
+        FlightManager.considerForFalImmunity(player);
     }
 
     @EventHandler

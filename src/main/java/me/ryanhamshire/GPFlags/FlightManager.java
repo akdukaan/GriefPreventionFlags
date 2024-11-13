@@ -229,7 +229,10 @@ public class FlightManager implements Listener {
         MessagingUtil.sendMessage(player, TextMode.Err, Messages.CantFlyHere);
         player.setFlying(false);
         player.setAllowFlight(false);
+        considerForFalImmunity(player);
+    }
 
+    public static void considerForFalImmunity(Player player) {
         Location location = player.getLocation();
         Block floor = getFloor(location.getBlock());
         if (location.getY() - floor.getY() >= 4) {
