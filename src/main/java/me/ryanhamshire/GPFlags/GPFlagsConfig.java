@@ -201,6 +201,8 @@ public class GPFlagsConfig {
             this.flagManager.registerFlagDefinition(new FlagDef_ReadLecterns(this.flagManager, plugin));
             this.flagManager.registerFlagDefinition(new FlagDef_AllowWitherDamage(this.flagManager, plugin));
 
+            this.flagManager.registerFlagDefinition(new FlagDef_AllowVillagerTrading(this.flagManager, plugin));
+
             try {
                 Class.forName("org.bukkit.event.raid.RaidTriggerEvent");
                 this.flagManager.registerFlagDefinition(new FlagDef_RaidMemberOnly(this.flagManager, plugin));
