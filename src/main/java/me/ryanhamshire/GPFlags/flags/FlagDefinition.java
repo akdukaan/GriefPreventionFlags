@@ -81,7 +81,7 @@ public abstract class FlagDefinition implements Listener {
         return flagManager.getEffectiveFlag(this.getName(), claim, world);
     }
 
-    public Flag getEffectiveFlag(@Nullable Claim claim, @Nullable Location location) {
+    public Flag getEffectiveFlag(@Nullable Claim claim, Location location) {
         if (location == null) return null;
         return flagManager.getEffectiveFlag(this.getName(), claim, location.getWorld());
     }

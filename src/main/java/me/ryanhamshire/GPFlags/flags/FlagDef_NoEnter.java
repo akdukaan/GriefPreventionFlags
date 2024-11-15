@@ -34,16 +34,10 @@ public class FlagDef_NoEnter extends PlayerMovementFlagDefinition {
         }
     }
 
-
     @Override
     public boolean allowMovement(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo) {
-        if (player.hasPermission("gpflags.bypass.noenter")) return true;
-
         Flag flag = getEffectiveFlag(claimTo, to);
-        if (flag == null) return true;
-
-        if (Util.canAccess(claimTo, player)) return true;
-        if (player.hasPermission("gpflags.bypass.noenter")) return true;
+        if (isAllowed(flag, claimTo, player)) return true;
 
         MessagingUtil.sendMessage(player, TextMode.Err, Messages.NoEnterMessage);
         return false;
@@ -51,11 +45,17 @@ public class FlagDef_NoEnter extends PlayerMovementFlagDefinition {
 
     @Override
     public void onChangeClaim(@NotNull Player player, @Nullable Location from, @NotNull Location to, @Nullable Claim claimFrom, @Nullable Claim claimTo, @Nullable Flag flagFrom, @Nullable Flag flagTo) {
-        if (flagTo == null) return;
-        if (Util.canAccess(claimTo, player)) return;
+        if (isAllowed(flagTo, claimTo, player)) return;
 
         MessagingUtil.sendMessage(player, TextMode.Err, Messages.NoEnterMessage);
         GriefPrevention.instance.ejectPlayer(player);
+    }
+
+    private boolean isAllowed(Flag flag, Claim claim, Player player) {
+        if (flag == null) return true;
+        if (Util.canAccess(claim, player)) return true;
+        if (player.hasPermission("gpflags.bypass.noenter")) return true;
+        return false;
     }
 
     @Override
