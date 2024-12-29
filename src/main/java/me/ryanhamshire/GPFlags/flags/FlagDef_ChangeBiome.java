@@ -10,8 +10,12 @@ import org.bukkit.block.Biome;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -155,6 +159,12 @@ public class FlagDef_ChangeBiome extends FlagDefinition {
                     // Get a snapshot of the chunk
                     int chunkX = chunk.getX();
                     int chunkZ = chunk.getZ();
+                    // Unfortunately, this only gets the existing chunk, and not a new one based on the seed.
+                    // Going to remove the attempt to regenerate the chunk instead of fixing it since it's not easy.
+                    // If an API is added in the future, will use the API and add in the functionality to GPFlags.
+                    // Otherwise, would need code similar to worldedits, but we need to only do the biome parts of it.
+                    // Eg, create a new temporary world, generate parts of it, copy over biome data, and then delete it.
+                    // https://github.com/EngineHub/WorldEdit/blob/97630e6d5099242ef7129089caf60b60b8db8af8/worldedit-bukkit/adapters/adapter-1.21.3/src/main/java/com/sk89q/worldedit/bukkit/adapter/impl/v1_21_3/PaperweightAdapter.java#L714
                     ChunkSnapshot chunkSnapshot = world.getEmptyChunkSnapshot(chunkX, chunkZ, true, false);
 
                     // Loop through coordinates within the chunk and set the biome
@@ -166,10 +176,11 @@ public class FlagDef_ChangeBiome extends FlagDefinition {
                             for (int z = 0; z < 16; z++) {
                                 int worldZ = chunkZ + z;
                                 if (worldZ >= lZ && worldZ <= gZ) {
-                                    for (int worldY = gY; worldY >= lY; worldY--) {
-                                        Location location = new Location(chunk.getWorld(), worldX, worldY, worldZ);
+                                    for (int worldY = lY; worldY < gY; worldY++) {
+                                        Location location = new Location(world, worldX, worldY, worldZ);
                                         Biome biome = chunkSnapshot.getBiome(x, worldY, z);
                                         world.setBiome(location, biome);
+                                        System.out.println("The biome at " + worldX + " " + worldY + " " + worldZ + " has been set to " + biome.name());
                                     }
                                 }
                             }
@@ -199,7 +210,7 @@ public class FlagDef_ChangeBiome extends FlagDefinition {
         }
         if (getEffectiveFlag(claim, claim.getLesserBoundaryCorner().getWorld()) == null) return;
 
-        resetBiome(claim);
+//        resetBiome(claim);
     }
 
     @Override
@@ -230,5 +241,4 @@ public class FlagDef_ChangeBiome extends FlagDefinition {
     public List<FlagType> getFlagType() {
         return Collections.singletonList(FlagType.CLAIM);
     }
-
 }
