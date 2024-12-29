@@ -18,7 +18,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
-import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -41,7 +40,7 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
             if (player.isGliding()) {
                 player.setGliding(false);
-                FlightManager.considerForFalImmunity(player);
+                FlightManager.considerForFallImmunity(player);
             }
         }
     }

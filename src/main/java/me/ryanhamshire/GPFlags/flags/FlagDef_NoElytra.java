@@ -28,7 +28,7 @@ public class FlagDef_NoElytra extends PlayerMovementFlagDefinition {
         if (!player.isGliding()) return;
         if (Util.shouldBypass(player, claimTo, flagTo)) return;
         player.setGliding(false);
-        FlightManager.considerForFalImmunity(player);
+        FlightManager.considerForFallImmunity(player);
     }
 
     @EventHandler
