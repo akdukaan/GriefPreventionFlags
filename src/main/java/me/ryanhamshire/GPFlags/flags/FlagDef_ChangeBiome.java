@@ -168,8 +168,7 @@ public class FlagDef_ChangeBiome extends FlagDefinition {
                                 if (worldZ >= lZ && worldZ <= gZ) {
                                     for (int worldY = gY; worldY >= lY; worldY--) {
                                         Location location = new Location(chunk.getWorld(), worldX, worldY, worldZ);
-                                        int y = Math.floorMod(worldY, 16);
-                                        Biome biome = chunkSnapshot.getBiome(x, y, z);
+                                        Biome biome = chunkSnapshot.getBiome(x, worldY, z);
                                         world.setBiome(location, biome);
                                     }
                                 }
