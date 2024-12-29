@@ -1,5 +1,6 @@
 package me.ryanhamshire.GPFlags.listener;
 
+import me.ryanhamshire.GPFlags.FlightManager;
 import me.ryanhamshire.GPFlags.event.PlayerPostClaimBorderEvent;
 import me.ryanhamshire.GPFlags.event.PlayerPreClaimBorderEvent;
 import me.ryanhamshire.GPFlags.util.Util;
@@ -17,6 +18,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -37,6 +39,10 @@ public class PlayerListener implements Listener {
         Set<Player> group = Util.getMovementGroup(player);
         if (flagsPreventMovement(locTo, locFrom, group)) {
             event.setCancelled(true);
+            if (player.isGliding()) {
+                player.setGliding(false);
+                FlightManager.considerForFalImmunity(player);
+            }
         }
     }
 
