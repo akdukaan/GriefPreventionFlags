@@ -42,6 +42,10 @@ public class PlayerListener implements Listener {
                 player.setGliding(false);
                 FlightManager.considerForFallImmunity(player);
             }
+            Entity vehicleEntity = player.getVehicle();
+            if (vehicleEntity instanceof Vehicle) {
+                Util.breakVehicle((Vehicle) player.getVehicle(), locFrom);
+            }
         }
     }
 
