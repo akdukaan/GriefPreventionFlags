@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -114,6 +115,7 @@ public class FlagDef_ChangeBiome extends FlagDefinition {
     }
 
     public void resetBiome(Claim claim) {
+        // Get the corners that we care about
         Location greater = claim.getGreaterBoundaryCorner();
         greater.setY(Util.getMaxHeight(greater));
         Location lesser = claim.getLesserBoundaryCorner();
@@ -125,24 +127,53 @@ public class FlagDef_ChangeBiome extends FlagDefinition {
         int gY = greater.getBlockY();
         int gZ = greater.getBlockZ();
         World world = lesser.getWorld();
+
+        // Get a list of chunks that we're going to process
+        List<Chunk> chunks = new ArrayList<>();
+        int lXChunk = lX >> 4;
+        int lZChunk = lZ >> 4;
+        int gXChunk = gX >> 4;
+        int gZChunk = gZ >> 4;
+
+        for (int chunkX = lXChunk; chunkX <= gXChunk; chunkX++) {
+            for (int chunkZ = lZChunk; chunkZ <= gZChunk; chunkZ++) {
+                Chunk chunk = world.getChunkAt(chunkX, chunkZ);
+                chunks.add(chunk);
+            }
+        }
+
+        // Build a runnable that gets the chunk snapshot and processes it if within coords
         int ticks = 0;
-        for (int x = lX; x < gX; x++) {
-            // We don't loop over y because then all chunks would get loaded in the same runnable
-            // and it's better to split that up
-            int finalX = x;
+        for (Chunk chunk : chunks) {
             BukkitRunnable runnable = new BukkitRunnable() {
                 @Override
                 public void run() {
-                    for (int z = lZ; z < gZ; z++) {
-                        Location loadLoc = new Location(world, finalX, 100, z);
-                        Chunk loadChunk = loadLoc.getChunk();
-                        if (!(loadChunk.isLoaded())) {
-                            loadChunk.load();
-                        }
-                        for (int y = lY; y <= gY; y++) {
-                            ChunkSnapshot chunkSnapshot = world.getEmptyChunkSnapshot(finalX >> 4, y >> 4, true, false);
-                            Biome biome = chunkSnapshot.getBiome(Math.floorMod(finalX, 16), Math.floorMod(y, 16), Math.floorMod(z, 16));
-                            world.setBiome(finalX, y, z, biome);
+                    // Make sure chunk is loaded
+                    if (!(chunk.isLoaded())) {
+                        chunk.load();
+                    }
+                    // Get a snapshot of the chunk
+                    int chunkX = chunk.getX();
+                    int chunkZ = chunk.getZ();
+                    ChunkSnapshot chunkSnapshot = world.getEmptyChunkSnapshot(chunkX, chunkZ, true, false);
+
+                    // Loop through coordinates within the chunk and set the biome
+                    chunkX = chunkX * 16;
+                    chunkZ = chunkZ * 16;
+                    for (int x = 0; x < 16; x++) {
+                        int worldX = chunkX + x;
+                        if (worldX >= lX && worldX <= gX) {
+                            for (int z = 0; z < 16; z++) {
+                                int worldZ = chunkZ + z;
+                                if (worldZ >= lZ && worldZ <= gZ) {
+                                    for (int worldY = gY; worldY >= lY; worldY--) {
+                                        Location location = new Location(chunk.getWorld(), worldX, worldY, worldZ);
+                                        int y = Math.floorMod(worldY, 16);
+                                        Biome biome = chunkSnapshot.getBiome(x, y, z);
+                                        world.setBiome(location, biome);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
