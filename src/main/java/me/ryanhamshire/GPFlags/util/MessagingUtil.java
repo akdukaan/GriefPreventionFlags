@@ -9,6 +9,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Matcher;
@@ -28,10 +29,12 @@ public class MessagingUtil {
      */
     public static void sendMessage(@Nullable CommandSender receiver, String color, Messages messageID, String... args) {
         String message = GPFlags.getInstance().getFlagsDataStore().getMessage(messageID, args);
+        if (message.isEmpty()) return;
         sendMessage(receiver, color + message);
     }
 
-    public static void sendMessage(@Nullable CommandSender receiver, String message) {
+    public static void sendMessage(@Nullable CommandSender receiver, @NotNull String message) {
+        if (message.isEmpty()) return;
         if (!(receiver instanceof Player)) {
             logToConsole(message);
             return;
