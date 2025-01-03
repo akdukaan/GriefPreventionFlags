@@ -18,17 +18,6 @@ import static org.bukkit.ChatColor.COLOR_CHAR;
 
 public class MessagingUtil {
 
-     /**
-      * Fills in message params, adds formatting, and sends it to the receiver.
-     * @param receiver person to get message or null if console
-     * @param messageID
-     * @param args
-     */
-    public static void sendMessage(@Nullable CommandSender receiver, Messages messageID, String... args) {
-        String message = GPFlags.getInstance().getFlagsDataStore().getMessage(messageID, args);
-        sendMessage(receiver, message);
-    }
-
     /**
      * Send a {@link Messages Message} to a player, or console if player is null
      *
