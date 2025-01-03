@@ -363,7 +363,9 @@ public class Util {
 
         InventoryHolder holder = (InventoryHolder) vehicle;
         for (ItemStack stack : holder.getInventory()) {
-            drops.add(stack);
+            if (stack != null ) {
+                drops.add(stack);
+            }
         }
         return drops;
     }
